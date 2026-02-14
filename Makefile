@@ -3,8 +3,8 @@ SDK_PATH = sdk
 BIN_DIR = bin
 OUTPUT_NAME = $(BIN_DIR)/libdiscordrpc_plugin.dll
 
-CFLAGS = -Wall -Wextra -shared -I"$(SDK_PATH)/include" -I"$(SDK_PATH)/include/vlc/plugins" -D__PLUGIN__ -D_FILE_OFFSET_BITS=64
-LDFLAGS = -L"$(SDK_PATH)/lib" -lvlccore -Wl,--allow-shlib-undefined
+CFLAGS = -Wall -Wextra -shared -O2 -DNDEBUG  -I"$(SDK_PATH)/include" -I"$(SDK_PATH)/include/vlc/plugins" -D__PLUGIN__ -D_FILE_OFFSET_BITS=64
+LDFLAGS = -L"$(SDK_PATH)/lib" -lvlccore -s
 
 SRCS = src/plugin.c src/discord.c src/discordipc.c src/metadata.c src/settings.c
 OBJS = $(patsubst src/%.c, $(BIN_DIR)/%.o, $(SRCS))
