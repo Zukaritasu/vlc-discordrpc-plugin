@@ -55,5 +55,11 @@ dkms.conf
 *.dwo
 
 /bin
+/bin64
 /.vscode
 /sdk
+/sdk64
+
+/releases
+
+/build.sh
