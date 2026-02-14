@@ -65,6 +65,21 @@ Find the menu called Interface and, within it, the submenu called Control interf
 ## Technical Details
 This plugin communicates with the Discord Client using **Unix Domain Sockets** on Linux/macOS and **Named Pipes** on Windows. It follows the official Discord RPC protocol for "SetActivity".
 
-## Dependencies
+# Dependencies
 
 - VLC SDK for Windows
+
+# Compatibility
+
+Since the plugin acts as a bridge between VLC Media Player and Discord, related to rich presence, it should be noted that for the plugin to work properly, both programs must be up to date and compatible on the same operating system.
+
+Currently, on Windows, Discord requires a 64-bit operating system to function properly.
+
+| Operating System | Minimum supported version | VLC | Discord | Key details |
+|------------------|----------------------------|-----------|---------------|-------------|
+| **Windows 7 / 8 / 8.1** | No longer officially supported | ✅ VLC 3.0.x still works | ❌ Discord support ended in March 2024 | Discord only via browser; VLC still runs but without future official support |
+| **Windows 10 (32-bit)** | Windows 10 | ✅ VLC supports 32 and 64-bit | ❌ Discord support ended in June 2024 | Discord requires 64-bit; VLC still compiles in 32-bit |
+| **Windows 10 (64-bit)** | Windows 10 | ✅ VLC supported | ✅ Discord supported | Recommended minimum option on Windows |
+| **Windows 11 (64-bit)** | Windows 11 | ✅ VLC supported | ✅ Discord supported | Best compatibility and long-term support |
+| **Linux (64-bit)** | Ubuntu 20.04+, Debian 11+, Fedora 32+, openSUSE 16.2+ | ✅ VLC supported | ✅ Discord supported | Discord does not distribute 32-bit binaries; only web version works on old hardware |
+| **macOS** | macOS 11 Big Sur+ | ✅ VLC supported | ✅ Discord supported | Support for Catalina and earlier ended in 2025; only web version works on older macOS |
