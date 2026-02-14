@@ -49,8 +49,8 @@ vlc_module_begin()
     /** settings */
     add_string(ID_RPC_CLIENT_ID, DEFAULT_CLIENT_ID, "Discord Application ID", "Enter the Client ID obtained from the Discord Developer Portal.", false)
     add_bool(ID_RPC_ENABLED, true, "Enable Rich Presence", "Enable or disable Discord Rich Presence integration.", false)
-    add_bool(ID_RPC_HIDE_ARTIST, true, "Show artist name", "Display the artist name in your Discord status.", false)
-    add_bool(ID_RPC_HIDE_ALBUM, true, "Show album name", "Display the album title in your Discord status.", false)
+    add_bool(ID_RPC_SHOW_ARTIST, true, "Show artist name", "Display the artist name in your Discord status.", false)
+    add_bool(ID_RPC_SHOW_ALBUM, true, "Show album name", "Display the album title in your Discord status.", false)
     /** */
 
     set_callbacks(Open, Close)
