@@ -30,11 +30,11 @@
 /**
  * @brief Internal state for the Discord RPC interface.
  */
-typedef struct {
+struct intf_sys_t {
     vlc_discord_t          discord;  /**< Discord RPC handle */
     vlc_discord_settings_t settings; /**< Plugin configuration settings */
     vlc_timer_t            timer;    /**< Timer for periodic presence updates */
-} intdf_sys_t;
+};
 
 static int  Open (vlc_object_t *);
 static void Close(vlc_object_t *);
@@ -66,7 +66,7 @@ vlc_module_end()
  */
 static void OnTimer(void *data) {
     intf_thread_t *p_intf = (intf_thread_t *)data;
-    intdf_sys_t *p_sys = (intdf_sys_t*)p_intf->p_sys;
+    intf_sys_t *p_sys = (intf_sys_t*)p_intf->p_sys;
 
     if (p_sys) p_sys->discord.pf_update(&p_sys->discord);
 }
@@ -85,7 +85,7 @@ static void OnTimer(void *data) {
 static int Open(vlc_object_t *p_this) {
     intf_thread_t *p_intf = (intf_thread_t *)p_this;
 
-    intdf_sys_t *p_sys = malloc(sizeof(intdf_sys_t));
+    intf_sys_t *p_sys = malloc(sizeof(intf_sys_t));
 
     if (!p_sys) return VLC_ENOMEM;
 
@@ -133,7 +133,7 @@ static int Open(vlc_object_t *p_this) {
  */
 static void Close(vlc_object_t *p_this) {
     intf_thread_t *p_intf = (intf_thread_t *)p_this;
-    intdf_sys_t *p_sys = (intdf_sys_t*)p_intf->p_sys;
+    intf_sys_t *p_sys = (intf_sys_t*)p_intf->p_sys;
 
     if (!p_sys) return;
 
