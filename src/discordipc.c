@@ -108,7 +108,7 @@ static void JsonEscape(char *psz_dest, const char *psz_src, size_t i_max)
 /**
  * @brief Thread-safe write operation with timeout.
  */
-static bool WriteAll(vlc_discord_ipc_data_t *p_sys, const void *p_buffer, size_t i_size)
+static bool WriteAll(vlc_discord_ipc_data_t *p_sys, const void *p_buffer, size_t i_size, bool *bp_errpipe)
 {
 #ifdef _WIN32
 	OVERLAPPED ov = {.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL)};
@@ -121,23 +121,39 @@ static bool WriteAll(vlc_discord_ipc_data_t *p_sys, const void *p_buffer, size_t
 	bool b_ok = false;
 	if (!WriteFile(p_sys->handle, p_buffer, (DWORD)i_size, &i_written, &ov))
 	{
-		if (GetLastError() == ERROR_IO_PENDING)
+		DWORD last_error = GetLastError();
+		switch (last_error)
 		{
-			if (WaitForSingleObject(ov.hEvent, PIPE_WRITE_TIMEOUT_MS) == WAIT_OBJECT_0)
+		case ERROR_BROKEN_PIPE:
+		case ERROR_NO_DATA:
+		case ERROR_PIPE_NOT_CONNECTED:
 			{
-				GetOverlappedResult(p_sys->handle, &ov, &i_written, FALSE);
-				b_ok = (i_written == i_size);
+				if (bp_errpipe) *bp_errpipe = true;
+				goto cleanup;
 			}
-			else
+		case ERROR_IO_PENDING:
 			{
-				CancelIo(p_sys->handle);
+				if (WaitForSingleObject(ov.hEvent, PIPE_WRITE_TIMEOUT_MS) == WAIT_OBJECT_0)
+				{
+					GetOverlappedResult(p_sys->handle, &ov, &i_written, FALSE);
+					b_ok = (i_written == i_size);
+				}
+				else
+				{
+					CancelIo(p_sys->handle);
+				}
 			}
+			break;
+		default:
+			break;
 		}
 	}
 	else
 	{
 		b_ok = (i_written == i_size);
 	}
+
+cleanup:
 	CloseHandle(ov.hEvent);
 	return b_ok;
 #else
@@ -151,8 +167,18 @@ static bool WriteAll(vlc_discord_ipc_data_t *p_sys, const void *p_buffer, size_t
         int i_ret = poll(&pfd, 1, PIPE_WRITE_TIMEOUT_MS);
         if (i_ret <= 0) return false;
 
+		if (pfd.revents & (POLLHUP | POLLERR)) 
+		{
+			if (bp_errpipe) *bp_errpipe = true; 
+			return false;
+		}
+
         ssize_t i_bytes = send(p_sys->handle, p_ptr + i_sent, i_size - i_sent, MSG_NOSIGNAL);
-        if (i_bytes <= 0) return false;
+        if (i_bytes <= 0)
+		{
+			if (errno == EPIPE && bp_errpipe) *bp_errpipe = true;
+			return false;
+		}
         
         i_sent += (size_t)i_bytes;
     }
@@ -163,7 +189,7 @@ static bool WriteAll(vlc_discord_ipc_data_t *p_sys, const void *p_buffer, size_t
 /**
  * @brief Thread-safe read operation with timeout.
  */
-static bool ReadAll(vlc_discord_ipc_data_t *p_sys, void *p_buffer, size_t i_size)
+static bool ReadAll(vlc_discord_ipc_data_t *p_sys, void *p_buffer, size_t i_size, bool *bp_errpipe)
 {
 #ifdef _WIN32
 	OVERLAPPED ov = {.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL)};
@@ -176,23 +202,38 @@ static bool ReadAll(vlc_discord_ipc_data_t *p_sys, void *p_buffer, size_t i_size
 	bool b_ok = false;
 	if (!ReadFile(p_sys->handle, p_buffer, (DWORD)i_size, &read, &ov))
 	{
-		if (GetLastError() == ERROR_IO_PENDING)
+		DWORD last_error = GetLastError();
+		switch (last_error)
 		{
-			if (WaitForSingleObject(ov.hEvent, PIPE_READ_TIMEOUT_MS) == WAIT_OBJECT_0)
+		case ERROR_BROKEN_PIPE:
+		case ERROR_PIPE_NOT_CONNECTED:
 			{
-				GetOverlappedResult(p_sys->handle, &ov, &read, FALSE);
-				b_ok = (read == i_size);
+				if (bp_errpipe) *bp_errpipe = true;
+				goto cleanup;
 			}
-			else
+		case ERROR_IO_PENDING:
 			{
-				CancelIo(p_sys->handle);
+				if (WaitForSingleObject(ov.hEvent, PIPE_READ_TIMEOUT_MS) == WAIT_OBJECT_0)
+				{
+					GetOverlappedResult(p_sys->handle, &ov, &read, FALSE);
+					b_ok = (read == i_size);
+				}
+				else
+				{
+					CancelIo(p_sys->handle);
+				}
 			}
+			break;
+		default:
+			break;
 		}
 	}
 	else
 	{
 		b_ok = (read == i_size);
 	}
+
+cleanup:
 	CloseHandle(ov.hEvent);
 	return b_ok;
 #else
@@ -203,9 +244,28 @@ static bool ReadAll(vlc_discord_ipc_data_t *p_sys, void *p_buffer, size_t i_size
         struct pollfd pfd = {.fd = p_sys->handle, .events = POLLIN};
         if (poll(&pfd, 1, PIPE_READ_TIMEOUT_MS) <= 0) return false;
 
+		if (pfd.revents & (POLLHUP | POLLERR)) 
+		{ 
+			if (bp_errpipe) *bp_errpipe = true;
+			return false;
+		}
+
         ssize_t i_bytes = recv(p_sys->handle, (char*)p_buffer + i_received, i_size - i_received, 0);
-        if (i_bytes <= 0) return false;
-        
+        if (i_bytes == 0)
+		{
+			if (bp_errpipe) *bp_errpipe = true;
+			return false;
+		}
+
+		if (i_bytes < 0)
+		{
+			if (errno == EINTR) continue;
+			if (errno == EAGAIN || errno == EWOULDBLOCK) 
+				return true;
+			if (errno == ECONNRESET && bp_errpipe) *bp_errpipe = true;
+			return false;
+		}
+		
         i_received += i_bytes;
     }
     return true;
@@ -215,7 +275,7 @@ static bool ReadAll(vlc_discord_ipc_data_t *p_sys, void *p_buffer, size_t i_size
 /**
  * @brief Sends a synchronous message to Discord and validates the response.
  */
-static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opcode, const char *psz_handshake)
+static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opcode, const char *psz_handshake, bool *bp_errpipe)
 {
 	if (p_sys->handle == INVALID_PIPE)
 	{
@@ -233,14 +293,14 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opc
 	}
 
 	vlc_discord_ipc_header_t header = {.i_opcode = i_opcode, .i_length = (int32_t)json_len};
-	if (!WriteAll(p_sys, &header, sizeof(header)))
+	if (!WriteAll(p_sys, &header, sizeof(header), bp_errpipe))
 	{
 		if (p_sys->pf_err)
 			p_sys->pf_err(p_sys->p_intf, "Failed to write header to Discord pipe.");
 		return false;
 	}
 
-	if (!WriteAll(p_sys, psz_handshake, json_len))
+	if (!WriteAll(p_sys, psz_handshake, json_len, bp_errpipe))
 	{
 		if (p_sys->pf_err)
 			p_sys->pf_err(p_sys->p_intf, "Failed to write JSON payload to Discord pipe.");
@@ -248,7 +308,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opc
 	}
 
 	vlc_discord_ipc_header_t resp_header;
-	if (!ReadAll(p_sys, &resp_header, sizeof(resp_header)))
+	if (!ReadAll(p_sys, &resp_header, sizeof(resp_header), bp_errpipe))
 	{
 		if (p_sys->pf_err)
 			p_sys->pf_err(p_sys->p_intf, "Failed to read response header (Timeout or disconnected).");
@@ -270,7 +330,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opc
 			return false;
 		}
 
-		if (!ReadAll(p_sys, response, resp_header.i_length))
+		if (!ReadAll(p_sys, response, resp_header.i_length, bp_errpipe))
 		{
 			if (p_sys->pf_err)
 				p_sys->pf_err(p_sys->p_intf, "Failed to read response body.");
@@ -338,7 +398,7 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 			 (unsigned long)get_pid(),
 			 psz_nonce);
 
-	SendDiscordMessageSync(p_sys, 1, psz_clear_activity);
+	SendDiscordMessageSync(p_sys, 1, psz_clear_activity, NULL);
 
 #if defined(_WIN32)
 	CloseHandle(p_sys->handle);
@@ -347,6 +407,8 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 #else
 	#error “Platform not supported for this Discord plugin”
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+	p_sys->handle = INVALID_PIPE;
+	p_sys->b_connected = false;
 
 	vlc_mutex_unlock(&p_sys->lock);
 	
@@ -455,7 +517,21 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 
 	snprintf(psz_json + offset, 2048 - offset, "}},\"nonce\":\"%s\"}", psz_nonce);
 
-	bool b_result = SendDiscordMessageSync(p_sys, 1, psz_json);
+	bool b_errpipe = false;
+	bool b_result = SendDiscordMessageSync(p_sys, 1, psz_json, &b_errpipe);
+
+	if (b_errpipe)
+	{
+#if defined(_WIN32)
+		CloseHandle(p_sys->handle);
+#elif defined(__linux__) || defined(__APPLE__)
+		close(p_sys->handle);
+#else
+	#error “Platform not supported for this Discord plugin”
+#endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
+		p_sys->handle = INVALID_PIPE;
+		p_sys->b_connected = false;
+	}
 	
 	free(psz_json);
 
@@ -487,7 +563,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 									  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 			if (p_sys->handle != INVALID_PIPE)
 			{
-				if (SendDiscordMessageSync(p_sys, 0, psz_handshake))
+				if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
 				{
 					p_sys->b_connected = true;
 					vlc_mutex_unlock(&p_sys->lock);
@@ -520,7 +596,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 
 		if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0)
 		{
-			if (SendDiscordMessageSync(p_sys, 0, psz_handshake))
+			if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
 			{
 				p_sys->b_connected = true;
 				vlc_mutex_unlock(&p_sys->lock);
@@ -533,7 +609,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 			snprintf(addr.sun_path, sizeof(addr.sun_path), "%s/discord-ipc-%d", psz_fallback_path, i);
             if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0)
             {
-                if (SendDiscordMessageSync(p_sys, 0, psz_handshake))
+                if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
                 {
                     p_sys->b_connected = true;
                     vlc_mutex_unlock(&p_sys->lock);
@@ -561,9 +637,9 @@ static bool Impl_IsConnected(const vlc_discord_ipc_t *p_self)
 {
 	if (!p_self || !p_self->p_sys)
 		return false;
-	vlc_discord_ipc_data_t *data = (vlc_discord_ipc_data_t *)p_self->p_sys;
+	vlc_discord_ipc_data_t *p_sys = (vlc_discord_ipc_data_t *)p_self->p_sys;
 
-	return data->b_connected;
+	return p_sys->b_connected;
 }
 
 bool DiscordRPC_CreateIPC(vlc_discord_ipc_t *p_ipc, intf_thread_t *p_intf, DiscordIPCException pf_err)
