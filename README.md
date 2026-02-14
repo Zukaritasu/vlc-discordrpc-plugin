@@ -20,7 +20,7 @@ This is a plugin specifically developed to display the user's activity in VLC on
 
 # Installation Guide
 
-### Window
+### Windows
 
 Plugin installation guide for Windows. First, you must update [VLC Media Player](https://www.videolan.org/) to the latest version available to avoid problems. After checking that you have the latest version of VLC, you need to download the latest version of this add-on by clicking here [Latest Release](https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases).
 
