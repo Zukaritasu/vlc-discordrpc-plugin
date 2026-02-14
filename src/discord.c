@@ -28,76 +28,76 @@
  * @struct vlc_discord_internal_data_t
  * @brief Global state container for the Discord RPC plugin.
  *
- * This structure manages the lifecycle of the worker thread, 
+ * This structure manages the lifecycle of the worker thread,
  * the IPC connection, and the cached media state.
  */
 typedef struct
 {
-    /** 
-     * VLC thread handle for the Discord callback loop.
-     * Managed by the Open() function and joined in Close(). 
-     */
-    vlc_thread_t thread;
+	/**
+	 * VLC thread handle for the Discord callback loop.
+	 * Managed by the Open() function and joined in Close().
+	 */
+	vlc_thread_t thread;
 
-    /** 
-     * Mutex for thread synchronization. 
-     * Used to protect the presence data from concurrent access.
-     */
-    vlc_mutex_t lock;
+	/**
+	 * Mutex for thread synchronization.
+	 * Used to protect the presence data from concurrent access.
+	 */
+	vlc_mutex_t lock;
 
-    /** 
-     * Execution flag for the worker thread.
-     * Set to true on start; set to false to trigger a clean exit of the loop. 
-     */
-    bool b_run;
+	/**
+	 * Execution flag for the worker thread.
+	 * Set to true on start; set to false to trigger a clean exit of the loop.
+	 */
+	bool b_run;
 
-    /** 
-     * Pointer to the VLC interface object for logging and configuration access. 
-     */
-    intf_thread_t *p_intf;
+	/**
+	 * Pointer to the VLC interface object for logging and configuration access.
+	 */
+	intf_thread_t *p_intf;
 
-    /** 
-     * Discord Inter-Process Communication (IPC) instance.
-     * Handles the low-level pipe/socket communication with the Discord client. 
-     */
-    vlc_discord_ipc_t ipc;
+	/**
+	 * Discord Inter-Process Communication (IPC) instance.
+	 * Handles the low-level pipe/socket communication with the Discord client.
+	 */
+	vlc_discord_ipc_t ipc;
 
-    /** 
-     * Current presence data being displayed on Discord. 
-     */
-    discord_presence_t presence;
+	/**
+	 * Current presence data being displayed on Discord.
+	 */
+	discord_presence_t presence;
 
-    /**
-     * Extracted media metadata (Title, Artist, Album). 
-     */
-    vlc_discord_metadata_t metadata;
+	/**
+	 * Extracted media metadata (Title, Artist, Album).
+	 */
+	vlc_discord_metadata_t metadata;
 
-    /** 
-     * Plugin user preferences. 
-     */
-    vlc_discord_settings_t settings;
+	/**
+	 * Plugin user preferences.
+	 */
+	vlc_discord_settings_t settings;
 
 } vlc_discord_internal_data_t;
 
 /**
  * @brief Internal exception handler for Discord IPC events.
- * * Logs internal messages and errors from the Discord IPC layer to the 
+ * * Logs internal messages and errors from the Discord IPC layer to the
  * VLC message log for debugging purposes.
  * * @param p_intf    Pointer to the VLC interface thread.
  * @param psz_msg   The error or status message to be logged.
  */
 static void Discord_Exception(intf_thread_t *p_intf, const char *psz_msg)
 {
-    if (p_intf != NULL && psz_msg != NULL)
-    {
-        /* msg_Dbg only shows up when VLC is in debug mode (-vv) */
-        msg_Dbg(p_intf, "Discord RPC: %s", psz_msg);
-    }
+	if (p_intf != NULL && psz_msg != NULL)
+	{
+		/* msg_Dbg only shows up when VLC is in debug mode (-vv) */
+		msg_Dbg(p_intf, "%s", psz_msg);
+	}
 }
 
 /**
  * @brief Worker thread function for Discord Rich Presence.
- * * Handles the lifecycle of the Discord IPC connection, including connection attempts, 
+ * * Handles the lifecycle of the Discord IPC connection, including connection attempts,
  * presence updates, and error handling.
  * * @param p_data Pointer to the VLC Discord plugin instance.
  * @return NULL
@@ -111,7 +111,7 @@ static void *Discord_Callbacks(void *p_data)
 	{
 		return NULL;
 	}
-	
+
 	while (p_sys->b_run)
 	{
 		while (p_sys->b_run)
@@ -170,11 +170,11 @@ static bool Impl_InitializePresence(vlc_discord_t *self)
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
 	if (!p_sys->settings.b_enabled)
 	{
-		/* true must be returned even if the presence is not active 
+		/* true must be returned even if the presence is not active
 		becauseif false is returned, it would be considered an initialization error */
 		return true;
 	}
-	
+
 	p_sys->b_run = true;
 
 	if (vlc_clone(&p_sys->thread, Discord_Callbacks, self, VLC_THREAD_PRIORITY_LOW))
@@ -205,15 +205,15 @@ static bool Impl_Update(vlc_discord_t *self)
 	vlc_mutex_lock(&p_sys->lock);
 
 	memset(&p_sys->presence, 0, sizeof(discord_presence_t));
-		
+
 	if (p_sys->metadata.b_is_playing)
 	{
 		if (p_sys->metadata.b_is_paused)
 		{
 			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PAUSE);
 			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Paused");
-		} 
-		else 
+		}
+		else
 		{
 			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PLAY);
 			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Playing");
@@ -225,16 +225,28 @@ static bool Impl_Update(vlc_discord_t *self)
 		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
 		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
 
-		if (p_sys->metadata.sz_artist[0] == '\0' && p_sys->metadata.sz_album[0] != '\0')
-			snprintf(p_sys->presence.sz_state, sizeof(p_sys->presence.sz_state), "%s", p_sys->metadata.sz_album);
-		else if (p_sys->metadata.sz_artist[0] != '\0' && p_sys->metadata.sz_album[0] == '\0')
-			snprintf(p_sys->presence.sz_state, sizeof(p_sys->presence.sz_state), "%s", p_sys->metadata.sz_artist);
-		else if (p_sys->metadata.sz_artist[0] != '\0' && p_sys->metadata.sz_album[0] != '\0')
-			snprintf(p_sys->presence.sz_state, sizeof(p_sys->presence.sz_state), "%s - %s", p_sys->metadata.sz_artist, p_sys->metadata.sz_album);
-		
+		size_t i_bufsize = sizeof(p_sys->presence.sz_state);
+
+		if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0' &&
+			p_sys->settings.b_show_album && p_sys->metadata.sz_album[0] != '\0')
+		{
+			snprintf(p_sys->presence.sz_state, i_bufsize, "%s - %s",
+					 p_sys->metadata.sz_artist, p_sys->metadata.sz_album);
+		}
+		else if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0')
+		{
+			snprintf(p_sys->presence.sz_state, i_bufsize, "%s",
+					 p_sys->metadata.sz_artist);
+		}
+		else if (p_sys->settings.b_show_album && p_sys->metadata.sz_album[0] != '\0')
+		{
+			snprintf(p_sys->presence.sz_state, i_bufsize, "%s",
+					 p_sys->metadata.sz_album);
+		}
+
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", p_sys->metadata.sz_title);
 	}
-	else 
+	else
 	{
 		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
 		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
@@ -242,7 +254,7 @@ static bool Impl_Update(vlc_discord_t *self)
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
 	}
 
-	//bool b_result = p_sys->ipc.pf_set_presence(&p_sys->ipc, p_sys->presence);
+	// bool b_result = p_sys->ipc.pf_set_presence(&p_sys->ipc, p_sys->presence);
 	vlc_mutex_unlock(&p_sys->lock);
 
 	return true;
@@ -283,7 +295,7 @@ static bool Impl_Destroy(vlc_discord_t *self)
 
 	free(p_sys);
 	self->p_sys = NULL;
-	
+
 	return true;
 }
 
@@ -318,7 +330,6 @@ static bool Impl_SetEnabled(vlc_discord_t *self, bool b_enable)
 
 	return true;
 }
-
 
 bool Discord_CreateInstance(vlc_discord_t *discord, vlc_discord_settings_t stgs, intf_thread_t *p_intf)
 {
