@@ -40,12 +40,12 @@ typedef void (*DiscordIPCException)(intf_thread_t *p_intf, const char *psz_excep
  */
 typedef struct 
 {
-    char sz_state[120];       /**< User's current status (e.g., "Playing") */
-    char sz_details[120];     /**< Track details (e.g., "Artist - Title") */
-    char sz_large_image[120]; /**< Key for the large asset image */
-    char sz_large_text[120];  /**< Hover text for the large image */
-    char sz_small_image[120]; /**< Key for the small asset image */
-    char sz_small_text[120];  /**< Hover text for the small image */
+    char sz_state[128];       /**< User's current status (e.g., "Playing") */
+    char sz_details[128];     /**< Track details (e.g., "Artist - Title") */
+    char sz_large_image[128]; /**< Key for the large asset image */
+    char sz_large_text[128];  /**< Hover text for the large image */
+    char sz_small_image[128]; /**< Key for the small asset image */
+    char sz_small_text[128];  /**< Hover text for the small image */
 
     int64_t i_start_time;     /**< Epoch timestamp for the start of the activity */
     int64_t i_end_time;       /**< Epoch timestamp for the end of the activity */
