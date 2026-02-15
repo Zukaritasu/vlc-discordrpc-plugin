@@ -34,9 +34,9 @@
  */
 typedef struct 
 {
-    char sz_title[256];  /**< Track or filename title */
-    char sz_artist[256]; /**< Performer or creator name */
-    char sz_album[256];  /**< Album or collection title */
+    char sz_title[128];  /**< Track or filename title */
+    char sz_artist[128]; /**< Performer or creator name */
+    char sz_album[128];  /**< Album or collection title */
 
     int64_t i_start_time; /**< Playback start timestamp (Epoch) */
     int64_t i_end_time;   /**< Estimated playback end timestamp (Epoch) */
