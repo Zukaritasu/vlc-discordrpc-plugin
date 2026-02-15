@@ -10,6 +10,19 @@ CFLAGS_WIN = -Wall -Wextra -shared -O2 -DNDEBUG \
              -D__PLUGIN__ -D_FILE_OFFSET_BITS=64
 LDFLAGS_WIN = -L"$(SDK_PATH_WIN)/lib" -lvlccore -s
 
+# Windows compatibility fix (Specific to native MinGW-w64/MSYS2):
+# 	This fix addresses a conflict where the VLC SDK (vlc_threads.h) expects 
+# 	POSIX poll() support, which is missing in native Windows environments
+#
+# While this compiles fine in WSL/Linux cross-compilers, native MinGW requires:
+# 	1. Force-including winsock2 headers to provide missing socket definitions
+# 	2. Mapping 'poll' and 'pollfd' to Windows-specific WSAPoll and WSAPOLLFD
+# 	3. Setting _WIN32_WINNT to 0x0600 (Vista+) to enable WSAPoll in headers
+ifeq ($(OS),Windows_NT)
+	CFLAGS_WIN += -Dpoll=WSAPoll -Dpollfd=WSAPOLLFD \
+				  -include winsock2.h
+endif
+
 OBJS_WIN = $(patsubst src/%.c, $(BIN_DIR_WIN)/%.o, $(SRCS))
 
 win64: $(BIN_DIR_WIN) $(OUTPUT_WIN)
