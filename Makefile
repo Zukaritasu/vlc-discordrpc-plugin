@@ -30,7 +30,7 @@ OUTPUT_LINUX = $(BIN_DIR_LINUX)/libdiscordrpc_plugin.so
 
 CFLAGS_LINUX = -Wall -Wextra -shared -fPIC -O2 -DNDEBUG \
                -I/usr/include/vlc/plugins -D__PLUGIN__ -D_FILE_OFFSET_BITS=64
-LDFLAGS_LINUX = -lvlccore -lvlc
+LDFLAGS_LINUX = -lvlccore
 
 OBJS_LINUX = $(patsubst src/%.c, $(BIN_DIR_LINUX)/%.o, $(SRCS))
 
