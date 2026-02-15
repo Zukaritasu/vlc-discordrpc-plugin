@@ -584,43 +584,43 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	if (!psz_temp_path)
 		psz_temp_path = psz_fallback_path;
 
-	for (int i = 0; i < MAX_PIPE_ATTEMPTS; i++)
+	const char *sub_paths[] = 
 	{
-		p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
-		if (p_sys->handle == INVALID_PIPE)
-			continue;
+        "%s/discord-ipc-%d",
+        "%s/snap.discord/discord-ipc-%d",
+        "%s/app/com.discordapp.Discord/discord-ipc-%d",
+        "/tmp/discord-ipc-%d"
+    };
 
-		struct sockaddr_un addr;
-		memset(&addr, 0, sizeof(addr));
-		addr.sun_family = AF_UNIX;
-		snprintf(addr.sun_path, sizeof(addr.sun_path), "%s/discord-ipc-%d", psz_temp_path, i);
+    int num_paths = sizeof(sub_paths) / sizeof(sub_paths[0]);
 
-		if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0)
+    for (int i = 0; i < MAX_PIPE_ATTEMPTS; i++) 
+	{
+        for (int p = 0; p < num_paths; p++) 
 		{
-			if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
+            char socket_path[1024];
+            snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_temp_path, i);
+
+            p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
+            if (p_sys->handle == -1) continue;
+
+            struct sockaddr_un addr;
+            memset(&addr, 0, sizeof(addr));
+            addr.sun_family = AF_UNIX;
+            strncpy(addr.sun_path, socket_path, sizeof(addr.sun_path) - 1);
+
+            if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0) 
 			{
-				p_sys->b_connected = true;
-				vlc_mutex_unlock(&p_sys->lock);
-				return true;
-			}
-		}
-
-		if (psz_temp_path != psz_fallback_path)
-		{
-			snprintf(addr.sun_path, sizeof(addr.sun_path), "%s/discord-ipc-%d", psz_fallback_path, i);
-            if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0)
-            {
-                if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
-                {
+                if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL)) 
+				{
                     p_sys->b_connected = true;
-                    vlc_mutex_unlock(&p_sys->lock);
+					vlc_mutex_unlock(&p_sys->lock);
                     return true;
                 }
             }
-		}
-
-		close(p_sys->handle);
-	}
+            close(p_sys->handle);
+        }
+    }
 	
 #else
 	#error “Platform not supported for this Discord plugin”
