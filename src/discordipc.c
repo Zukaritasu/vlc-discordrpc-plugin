@@ -21,6 +21,8 @@
 #include <stdlib.h>
 #include <vlc_rand.h>
 
+#include <inttypes.h>
+
 #define MAX_PIPE_ATTEMPTS 10
 
 #if defined(_WIN32)
@@ -462,8 +464,8 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 	}
 
 	int offset = snprintf(psz_json, 2048,
-						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%lu,\"activity\":{",
-						  (unsigned long)get_pid());
+						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{",
+						  (uint64_t)get_pid());
 
 	bool b_need_comma = false;
 
@@ -481,9 +483,9 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 
 	if (dp_presence->i_start_time > 0)
 	{
-		offset += snprintf(psz_json + offset, 2048 - offset, "%s\"timestamps\":{\"start\":%lld", b_need_comma ? "," : "", dp_presence->i_start_time);
+		offset += snprintf(psz_json + offset, 2048 - offset, "%s\"timestamps\":{\"start\":%" PRIu64, b_need_comma ? "," : "", dp_presence->i_start_time);
 		if (dp_presence->i_end_time > 0)
-			offset += snprintf(psz_json + offset, 2048 - offset, ",\"end\":%lld", dp_presence->i_end_time);
+			offset += snprintf(psz_json + offset, 2048 - offset, ",\"end\":%" PRIu64, dp_presence->i_end_time);
 		offset += snprintf(psz_json + offset, 2048 - offset, "}");
 		b_need_comma = true;
 	}
@@ -549,7 +551,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	vlc_mutex_lock(&p_sys->lock);
 
 	char psz_handshake[256];
-	snprintf(psz_handshake, sizeof(psz_handshake), "{\"v\":1,\"client_id\":\"%llu\"}", id);
+	snprintf(psz_handshake, sizeof(psz_handshake), "{\"v\":1,\"client_id\":\"%" PRIu64 "\"}", id);
 
 #if defined(_WIN32)
 
@@ -576,7 +578,6 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	}
 	
 #elif defined(__linux__) || defined(__APPLE__)
-	char psz_socket_path[128];
 	const char *psz_temp_path = getenv("XDG_RUNTIME_DIR");
 	const char* psz_fallback_path = "/tmp";
 

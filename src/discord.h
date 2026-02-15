@@ -27,6 +27,16 @@
 
 #include "settings.h"
 
+#ifndef vlc_tick_from_sec 
+    #define vlc_tick_from_sec(sec) ((sec) * CLOCK_FREQ) 
+#endif
+
+#ifndef SEC_FROM_VLC_TICK 
+    #define SEC_FROM_VLC_TICK(vtk) ((vtk) / CLOCK_FREQ)
+#endif
+
+
+
 /**
  * @struct vlc_discord_t
  * @brief High-level controller for the Discord RPC plugin.

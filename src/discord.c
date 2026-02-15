@@ -119,7 +119,7 @@ static void *Discord_Callbacks(void *p_data)
 			// TODO: casting int64_t to uint64_t
 			if (p_sys->ipc.pf_connect(&p_sys->ipc, (uint64_t)p_sys->settings.i_client_id))
 				break;
-			msleep(VLC_TICK_FROM_SEC(2));
+			msleep(vlc_tick_from_sec(2));
 		}
 
 		if (!p_sys->b_run)
@@ -139,7 +139,7 @@ static void *Discord_Callbacks(void *p_data)
 			if (!p_sys->ipc.pf_is_connected(&p_sys->ipc))
 				break;
 
-			msleep(VLC_TICK_FROM_SEC(2));
+			msleep(vlc_tick_from_sec(2));
 		}
 
 		if (!p_sys->b_run)
