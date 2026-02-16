@@ -36,6 +36,15 @@ Remember that if you have VLC open, you must close it to continue, as you must r
 cd "C:\Program Files\VideoLAN\VLC" && vlc --reset-plugins-cache
 ```
 
+### Linux
+
+Plugin installation guide for Linux. First, you must update [VLC Media Player](https://www.videolan.org/) to the latest version available to avoid problems.
+
+> [!IMPORTANT]
+> At this time, the plugin is not distributed in binary format for manual installation; it is only available for manual compilation. For more information on how to compile the plugin, click here [INSTALL](./INSTALL).
+
+---
+
 After executing the command, you can open VLC again, but it doesn't end there, as VLC does not load the plugin directly when it opens. You must first enable it in the preferences.
 
 <p align="center">
