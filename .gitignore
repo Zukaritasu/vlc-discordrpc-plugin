@@ -62,3 +62,10 @@ dkms.conf
 /releases
 
 /build.sh
+/changelog.md
+/obj-x86_64-linux-gnu
+/debian/vlc-discordrpc-plugin
+/debian/files
+/debian/vlc-discordrpc-plugin.substvars
+/debian/debhelper-build-stamp
+/debian/.debhelper

@@ -1,0 +1,14 @@
+Source: vlc-discordrpc-plugin
+Section: misc
+Priority: optional
+Maintainer: Zukaritasu <zukaritasu@gmail.com>
+Build-Depends: debhelper-compat (= 13), build-essential, cmake, pkg-config, libvlccore-dev
+Standards-Version: 4.7.3
+Homepage: https://github.com/Zukaritasu/vlc-discordrpc-plugin
+
+Package: vlc-discordrpc-plugin
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}, vlc
+Description: Discord Rich Presence plugin for VLC
+ This plugin integrates VLC Media Player with Discord Rich Presence,
+ showing playback status, title, and progress directly in Discord.
