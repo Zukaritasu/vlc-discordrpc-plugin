@@ -1,0 +1,40 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+	remove|deconfigure)
+		if pgrep -x "vlc" > /dev/null; then
+			echo "VLC is running. Please close it before removing the Discord RPC plugin."
+			exit 1
+		fi
+	
+		echo "Cleaning up Discord RPC plugin traces from user configurations..."
+
+		for vlcrc in /home/*/.config/vlc/vlcrc; do
+			if [ -f "$vlcrc" ]; then
+				# Delete the [discord_rpc] section and its options
+				sed -i '/^\[discord_rpc\]/,/^\[/ { /^\[discord_rpc\]/d; /^\[/!d; }' "$vlcrc"
+				# Remove 'discord_rpc' from the active control interfaces
+				sed -i 's/discord_rpc//g' "$vlcrc"
+				# Remove double commas and fix control= syntax
+				sed -i 's/,,/,/g; s/control=,/control=/g; s/,$//g' "$vlcrc"
+			fi
+		done
+	
+		if command -v vlc >/dev/null 2>&1; then
+			echo "Cleaning up VLC plugin cache before removal..."
+			vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
+			echo "VLC plugin cache cleaned."
+		fi
+	;;
+
+	upgrade|failed-upgrade)
+	;;
+
+	*)
+		echo "prerm called with unknown argument: \`$1'" >&2
+		exit 1
+	;;
+esac
+
+exit 0

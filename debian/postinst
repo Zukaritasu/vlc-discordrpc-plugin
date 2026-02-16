@@ -1,0 +1,26 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+	configure)
+		echo "Configuring vlc-discordrpc-plugin..."
+		
+		if command -v vlc >/dev/null 2>&1; then
+			vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
+			echo "VLC plugin cache updated successfully."
+		else
+			echo "Warning: VLC binary not found. Please ensure VLC is installed to use this plugin."
+		fi
+	;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+
+	;;
+
+	*)
+		echo "postinst called with unknown argument: \`$1'" >&2
+		exit 1
+	;;
+esac
+
+exit 0

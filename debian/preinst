@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+case "$1" in
+	install|upgrade)
+		if pgrep -x "vlc" > /dev/null; then
+			echo "ERROR: VLC is running. Please close it before installing the Discord RPC plugin."
+			exit 1
+		fi
+	;;
+esac
+
+exit 0
