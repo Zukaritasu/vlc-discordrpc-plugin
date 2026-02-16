@@ -42,12 +42,17 @@ Remember that if you have VLC open, you must close it to continue, as you must r
 cd "C:\Program Files\VideoLAN\VLC" && vlc --reset-plugins-cache
 ```
 
-### Linux
+### Linux (Debian/Ubuntu)
 
-Plugin installation guide for Linux. First, you must update [VLC Media Player](https://www.videolan.org/) to the latest version available to avoid problems.
+Plugin installation guide for Linux. First, you must update [VLC Media Player](https://www.videolan.org/) to the latest version available to avoid problems. After checking that you have the latest version of VLC, you need to download the latest version of this add-on by clicking here [Latest Release](https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases).
 
-> [!IMPORTANT]
-> At this time, the plugin is not distributed in binary format for manual installation; it is only available for manual compilation. For more information on how to compile the plugin, click here [INSTALL](./INSTALL).
+Since the plugin is not part of the VLC compilation, you must install the downloaded plugin using the following command:
+
+*before executing the command, make sure VLC is closed*
+
+```bash
+sudo dpkg -i vlc-discordrpc-plugin_1.0.0~beta1_amd64.deb
+```
 
 ---
 
