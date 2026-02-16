@@ -1,14 +1,13 @@
 # Discord Rich Presence for VLC Media Player
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/Zukaritasu/vlc-discordrpc-plugin">
-  <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/zukaritasu/vlc-discordrpc-plugin/total">
-  <img src="https://img.shields.io/github/v/release/Zukaritasu/vlc-discordrpc-plugin">
-  <img src="https://img.shields.io/badge/Package-.deb-blue?style=flat-square&logo=linux">
-  <p align="center">
-    <img src="https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white">
-    <img src="https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white">
-  </p>
+  <img src="https://img.shields.io/github/license/Zukaritasu/vlc-discordrpc-plugin?style=flat">
+  <img src="https://img.shields.io/github/downloads/Zukaritasu/vlc-discordrpc-plugin/total?style=flat">
+  <img src="https://img.shields.io/github/v/release/Zukaritasu/vlc-discordrpc-plugin?style=flat">
+  <img src="https://img.shields.io/badge/Package-.deb-blue?style=flat&logo=linux">
+  <br><br>
+  <img src="https://img.shields.io/badge/Debian-D70A53?style=flat&logo=debian&logoColor=white">
+  <img src="https://img.shields.io/badge/Windows-0078D6?style=flat&logo=windows&logoColor=white">
 </p>
 
 This is a plugin specifically developed to display the user's activity in VLC on Discord through rich presence. This includes videos, music, images, or any multimedia content supported by VLC.
