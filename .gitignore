@@ -54,15 +54,11 @@ dkms.conf
 # debug information files
 *.dwo
 
-/bin
-/bin64
-/bin_linux
+/build
+/.test
 /.vscode
 /sdk
-/sdk64
 
 /releases
 
 /build.sh
-
-INSTALL
