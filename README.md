@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/github/v/release/Zukaritasu/vlc-discordrpc-plugin?style=flat">
   <img src="https://img.shields.io/badge/Package-.deb-blue?style=flat&logo=linux">
   <br><br>
+  <img src="https://img.shields.io/badge/Fedora-294172?style=flat&logo=fedora&logoColor=white">
   <img src="https://img.shields.io/badge/Debian-D70A53?style=flat&logo=debian&logoColor=white">
   <img src="https://img.shields.io/badge/Windows-0078D6?style=flat&logo=windows&logoColor=white">
 </p>
