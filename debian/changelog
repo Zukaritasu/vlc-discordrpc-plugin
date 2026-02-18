@@ -1,3 +1,11 @@
+vlc-discordrpc-plugin (1.0.0) stable; urgency=medium
+
+  * Release version 1.0.0.
+  * Provides integration between VLC Media Player and Discord.
+  * Built with CMake, installs plugin into /usr/lib/x86_64-linux-gnu/vlc/plugins/misc/.
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 17 Feb 2026 21:19:00 -0400
+
 vlc-discordrpc-plugin (1.0.0~beta1) unstable; urgency=medium
 
   * Release version 1.0.0-beta1.

@@ -8,9 +8,11 @@ file(GLOB SOURCES "src/*.c")
 
 add_compile_options(-Wall -Wextra -O2 -DNDEBUG)
 
-if(APPLE)
-    message(FATAL_ERROR "MacOS is not supported by this build configuration.")
-elseif(WIN32)
+if(NOT WIN32 AND NOT UNIX)
+    message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM_NAME}")
+endif()
+
+if(WIN32)
     message(STATUS "Configuring for Windows...")
 
     find_package(PkgConfig REQUIRED)
@@ -61,7 +63,7 @@ elseif(WIN32)
         message(WARNING "VLC installation directory not found. Please install the plugin manually.")
     endif()
 
-elseif(UNIX)
+else()
     message(STATUS "Configuring for Linux...")
     
     find_package(PkgConfig REQUIRED)
@@ -97,6 +99,4 @@ elseif(UNIX)
     else()
         message(WARNING "VLC installation directory not found. Please install the plugin manually.")
     endif()
-else()
-    message(FATAL_ERROR "Unsupported platform.")
 endif()
