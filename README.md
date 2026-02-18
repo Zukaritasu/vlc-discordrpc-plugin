@@ -56,7 +56,7 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 *before executing the command, make sure VLC is closed*
 
 ```bash
-sudo dpkg -i vlc-discordrpc-plugin_1.0.0~beta1_amd64.deb
+sudo dpkg -i vlc-discordrpc-plugin_1.0.0_amd64.deb
 ```
 
 ---
