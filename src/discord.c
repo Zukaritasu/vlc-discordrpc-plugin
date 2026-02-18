@@ -230,8 +230,11 @@ static bool Impl_Update(vlc_discord_t *self)
 		if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0' &&
 			p_sys->settings.b_show_album && p_sys->metadata.sz_album[0] != '\0')
 		{
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
 			snprintf(p_sys->presence.sz_state, i_bufsize, "%s - %s",
 					 p_sys->metadata.sz_artist, p_sys->metadata.sz_album);
+#pragma GCC diagnostic pop
 		}
 		else if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0')
 		{
