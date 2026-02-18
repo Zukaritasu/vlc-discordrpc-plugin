@@ -33,6 +33,8 @@
  */
 typedef void (*DiscordIPCException)(intf_thread_t *p_intf, const char *psz_excep);
 
+#define DISCORD_FIELD_MAX 128
+
 /**
  * @brief Presence metadata structure (Rich Presence state).
  * * Defines the visual information sent to Discord, including strings for
@@ -40,12 +42,12 @@ typedef void (*DiscordIPCException)(intf_thread_t *p_intf, const char *psz_excep
  */
 typedef struct 
 {
-    char sz_state[128];       /**< User's current status (e.g., "Playing") */
-    char sz_details[128];     /**< Track details (e.g., "Artist - Title") */
-    char sz_large_image[128]; /**< Key for the large asset image */
-    char sz_large_text[128];  /**< Hover text for the large image */
-    char sz_small_image[128]; /**< Key for the small asset image */
-    char sz_small_text[128];  /**< Hover text for the small image */
+    char sz_state[DISCORD_FIELD_MAX];       /**< User's current status (e.g., "Playing") */
+    char sz_details[DISCORD_FIELD_MAX];     /**< Track details (e.g., "Artist - Title") */
+    char sz_large_image[DISCORD_FIELD_MAX]; /**< Key for the large asset image */
+    char sz_large_text[DISCORD_FIELD_MAX];  /**< Hover text for the large image */
+    char sz_small_image[DISCORD_FIELD_MAX]; /**< Key for the small asset image */
+    char sz_small_text[DISCORD_FIELD_MAX];  /**< Hover text for the small image */
 
     int64_t i_start_time;     /**< Epoch timestamp for the start of the activity */
     int64_t i_end_time;       /**< Epoch timestamp for the end of the activity */
