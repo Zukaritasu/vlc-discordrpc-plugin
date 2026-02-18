@@ -33,6 +33,8 @@ typedef HANDLE pipe_t;
 #define INVALID_PIPE INVALID_HANDLE_VALUE
 #define get_pid() GetCurrentProcessId()
 
+#define SOCKET_PATH_MAX MAX_PATH
+
 #elif defined(__linux__) || defined(__APPLE__)
 
 #include <sys/socket.h>
@@ -46,11 +48,14 @@ typedef int pipe_t;
 #define INVALID_PIPE -1
 #define get_pid() getpid()
 
+#define SOCKET_PATH_MAX sizeof(((struct sockaddr_un *)0)->sun_path)
+
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 
 #define PIPE_WRITE_TIMEOUT_MS 2000
-#define PIPE_READ_TIMEOUT_MS 3000
-#define MAX_MESSAGE_SIZE 16384
+#define PIPE_READ_TIMEOUT_MS  3000
+#define MAX_MESSAGE_SIZE      2048
+#define NONCE_SIZE            16
 
 /**
  * @struct vlc_discord_ipc_data_t
@@ -390,8 +395,8 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 		return true;
 	}
 
-	char psz_nonce[16];
-	char psz_clear_activity[512];
+	char psz_nonce[NONCE_SIZE];
+	char psz_clear_activity[MAX_MESSAGE_SIZE];
 
 	GenerateNonce(psz_nonce, sizeof(psz_nonce));
 
@@ -447,23 +452,25 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 		return false;
 	}
 
-	char s_state[256], s_details[256], s_l_text[256], s_s_text[256];
+	char s_state[DISCORD_FIELD_MAX], s_details[DISCORD_FIELD_MAX], 
+		 s_l_text[DISCORD_FIELD_MAX], s_s_text[DISCORD_FIELD_MAX];
+
 	JsonEscape(s_state, dp_presence->sz_state, sizeof(s_state));
 	JsonEscape(s_details, dp_presence->sz_details, sizeof(s_details));
 	JsonEscape(s_l_text, dp_presence->sz_large_text, sizeof(s_l_text));
 	JsonEscape(s_s_text, dp_presence->sz_small_text, sizeof(s_s_text));
 
-	char psz_nonce[16];
+	char psz_nonce[NONCE_SIZE];
 	GenerateNonce(psz_nonce, sizeof(psz_nonce));
 
-	char *psz_json = malloc(2048);
+	char *psz_json = malloc(MAX_MESSAGE_SIZE);
 	if (!psz_json)
 	{
 		vlc_mutex_unlock(&p_sys->lock);
 		return false;
 	}
 
-	int offset = snprintf(psz_json, 2048,
+	int offset = snprintf(psz_json, MAX_MESSAGE_SIZE,
 						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{",
 						  (uint64_t)get_pid());
 
@@ -471,53 +478,52 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 
 	if (strlen(s_state) > 0)
 	{
-		offset += snprintf(psz_json + offset, 2048 - offset, "\"state\":\"%s\"", s_state);
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "\"state\":\"%s\"", s_state);
 		b_need_comma = true;
 	}
 
 	if (strlen(s_details) > 0)
 	{
-		offset += snprintf(psz_json + offset, 2048 - offset, "%s\"details\":\"%s\"", b_need_comma ? "," : "", s_details);
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"details\":\"%s\"", b_need_comma ? "," : "", s_details);
 		b_need_comma = true;
 	}
 
 	if (dp_presence->i_start_time > 0)
 	{
-		offset += snprintf(psz_json + offset, 2048 - offset, "%s\"timestamps\":{\"start\":%" PRIu64, b_need_comma ? "," : "", dp_presence->i_start_time);
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"timestamps\":{\"start\":%" PRIu64, b_need_comma ? "," : "", dp_presence->i_start_time);
 		if (dp_presence->i_end_time > 0)
-			offset += snprintf(psz_json + offset, 2048 - offset, ",\"end\":%" PRIu64, dp_presence->i_end_time);
-		offset += snprintf(psz_json + offset, 2048 - offset, "}");
+			offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, ",\"end\":%" PRIu64, dp_presence->i_end_time);
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "}");
 		b_need_comma = true;
 	}
 
 	if (dp_presence->sz_large_image[0] || dp_presence->sz_small_image[0])
 	{
-		offset += snprintf(psz_json + offset, 2048 - offset, "%s\"assets\":{", b_need_comma ? "," : "");
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"assets\":{", b_need_comma ? "," : "");
 		bool hasAsset = false;
 		if (dp_presence->sz_large_image[0])
 		{
-			offset += snprintf(psz_json + offset, 2048 - offset, "\"large_image\":\"%s\"", dp_presence->sz_large_image);
+			offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "\"large_image\":\"%s\"", dp_presence->sz_large_image);
 			hasAsset = true;
 		}
 		if (s_l_text[0])
 		{
-			offset += snprintf(psz_json + offset, 2048 - offset, "%s\"large_text\":\"%s\"", hasAsset ? "," : "", s_l_text);
+			offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"large_text\":\"%s\"", hasAsset ? "," : "", s_l_text);
 			hasAsset = true;
 		}
 		if (dp_presence->sz_small_image[0])
 		{
-			offset += snprintf(psz_json + offset, 2048 - offset, "%s\"small_image\":\"%s\"", hasAsset ? "," : "", dp_presence->sz_small_image);
+			offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"small_image\":\"%s\"", hasAsset ? "," : "", dp_presence->sz_small_image);
 			hasAsset = true;
 		}
 		if (s_s_text[0])
 		{
-			offset += snprintf(psz_json + offset, 2048 - offset, "%s\"small_text\":\"%s\"", hasAsset ? "," : "", s_s_text);
+			offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "%s\"small_text\":\"%s\"", hasAsset ? "," : "", s_s_text);
 		}
-		offset += snprintf(psz_json + offset, 2048 - offset, "}");
-		b_need_comma = true;
+		offset += snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "}");
 	}
 
-	snprintf(psz_json + offset, 2048 - offset, "}},\"nonce\":\"%s\"}", psz_nonce);
+	snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "}},\"nonce\":\"%s\"}", psz_nonce);
 
 	bool b_errpipe = false;
 	bool b_result = SendDiscordMessageSync(p_sys, 1, psz_json, &b_errpipe);
@@ -550,12 +556,12 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 
 	vlc_mutex_lock(&p_sys->lock);
 
-	char psz_handshake[256];
+	char psz_handshake[MAX_MESSAGE_SIZE];
 	snprintf(psz_handshake, sizeof(psz_handshake), "{\"v\":1,\"client_id\":\"%" PRIu64 "\"}", id);
 
 #if defined(_WIN32)
 
-	char psz_pipe_name[128];
+	char psz_pipe_name[SOCKET_PATH_MAX];
 	for (int i = 0; i < MAX_PIPE_ATTEMPTS; i++)
 	{
 		snprintf(psz_pipe_name, sizeof(psz_pipe_name), "\\\\.\\pipe\\discord-ipc-%d", i);
@@ -587,9 +593,9 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	const char *sub_paths[] = 
 	{
         "%s/discord-ipc-%d",
-        "%s/snap.discord/discord-ipc-%d",
-        "%s/app/com.discordapp.Discord/discord-ipc-%d",
-        "/tmp/discord-ipc-%d"
+        "%s/snap.discord/discord-ipc-%d",				/* Snap */
+        "%s/app/com.discordapp.Discord/discord-ipc-%d", /* Flatpak */
+		"/tmp/discord-ipc-%d"
     };
 
     int num_paths = sizeof(sub_paths) / sizeof(sub_paths[0]);
@@ -598,16 +604,19 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	{
         for (int p = 0; p < num_paths; p++) 
 		{
-            char socket_path[1024];
-            snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_temp_path, i);
+            char socket_path[SOCKET_PATH_MAX];
+            if (strstr(sub_paths[p], "%s"))
+				snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_temp_path, i);
+			else snprintf(socket_path, sizeof(socket_path), sub_paths[p], i);
 
             p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
-            if (p_sys->handle == -1) continue;
+            if (p_sys->handle == INVALID_PIPE)
+				continue;
 
             struct sockaddr_un addr;
             memset(&addr, 0, sizeof(addr));
             addr.sun_family = AF_UNIX;
-            strncpy(addr.sun_path, socket_path, sizeof(addr.sun_path) - 1);
+            snprintf(addr.sun_path, sizeof(addr.sun_path), "%s", socket_path);
 
             if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0) 
 			{
