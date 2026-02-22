@@ -83,6 +83,16 @@ Find the menu called Interface and, within it, the submenu called Control interf
 
 *If you want to contribute to the development of the plugin, solve a problem, or improve something about how it works, don't forget to make a pull request!*
 
+# Uninstall
+
+### Windows
+Download [uninstall.ps1](uninstall.ps1) and run it in PowerShell as administrator.
+
+### Linux (Debian/Ubuntu)
+* ```bash
+  sudo dpkg -r vlc-discordrpc-plugin
+  ```
+
 # Discord Information
 
 * [RPC](https://discord.com:2053/developers/docs/topics/rpc)
