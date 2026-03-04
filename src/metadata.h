@@ -42,6 +42,7 @@ typedef struct
     int64_t i_end_time;   /**< Estimated playback end timestamp (Epoch) */
 
     bool b_is_video;   /**< True if the current media has a video track */
+    bool b_is_audio;   /**< True if the current media has a audio track */
     bool b_is_paused;  /**< True if playback is currently suspended */
     bool b_is_playing; /**< True if there is an active input item */
 

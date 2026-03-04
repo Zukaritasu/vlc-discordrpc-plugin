@@ -46,7 +46,17 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 
 	int i_state = var_GetInteger(p_input, "state");
 	p_md->b_is_paused = i_state == PAUSE_S;
-	
+
+	int i_nb_tracks = p_item->i_es;
+
+	for (int i = 0; i < i_nb_tracks; i++)
+	{
+		if (p_item->es[i]->i_cat == VIDEO_ES)
+			p_md->b_is_video = true;
+		else if (p_item->es[i]->i_cat == AUDIO_ES)
+			p_md->b_is_audio = true;
+	}
+
 	char *psz_title = input_item_GetMeta(p_item, vlc_meta_Title);
 	char *psz_artist = input_item_GetMeta(p_item, vlc_meta_Artist);
 	char *psz_album = input_item_GetMeta(p_item, vlc_meta_Album);
@@ -67,19 +77,6 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 		p_md->i_end_time = p_md->i_start_time + (i_vlc_len / 1000000);
 	else
 		p_md->i_end_time = 0;
-
-	/*vlc_value_t val_list;
-	vlc_value_t val_texts;
-
-	 if (var_Change(p_input, "video-es", VLC_VAR_GETCHOICES, &val_list, &val_texts) == VLC_SUCCESS)
-	{
-		p_md->b_is_video = (val_list.p_list->i_count > 0);
-		var_FreeList(&val_list, &val_texts);
-	}
-	else
-	{
-		p_md->b_is_video = false;
-	} */
 
 	free(psz_title);
 	free(psz_artist);

@@ -20,6 +20,7 @@
 #define PLUGINIMAGES_H
 
 #define PLUGIN_IMAGE_LARGE_DEFAULT "large_image_default"
+#define PLUGIN_IMAGE_LARGE_MUSIC "large_image_music"
 #define PLUGIN_IMAGE_SMALL_PAUSE "pause"
 #define PLUGIN_IMAGE_SMALL_PLAY "play"
 

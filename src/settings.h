@@ -26,6 +26,7 @@
 #define CFG_PREFIX "discord-"
 #define ID_RPC_CLIENT_ID    CFG_PREFIX "client-id"
 #define ID_RPC_ENABLED      CFG_PREFIX "enabled"
+#define ID_RPC_SHOW_TITLE   CFG_PREFIX "show-title"
 #define ID_RPC_SHOW_ALBUM   CFG_PREFIX "show-album"
 #define ID_RPC_SHOW_ARTIST  CFG_PREFIX "show-artist"
 
@@ -46,6 +47,7 @@ typedef struct
     bool     b_enabled;     /**< Master switch for the plugin */
     bool     b_show_artist; /**< Toggle to privacy-mask the artist name */
     bool     b_show_album;  /**< Toggle to privacy-mask the album name */
+    bool     b_show_title;  /**< Toggle to privacy-mask the title */
 } vlc_discord_settings_t;
 
 /**

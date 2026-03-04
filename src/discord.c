@@ -210,19 +210,22 @@ static bool Impl_Update(vlc_discord_t *self)
 	{
 		if (p_sys->metadata.b_is_paused)
 		{
-			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PAUSE);
+			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PLAY);
 			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Paused");
 		}
 		else
 		{
-			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PLAY);
+			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PAUSE);
 			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Playing");
 
 			p_sys->presence.i_start_time = p_sys->metadata.i_start_time;
 			p_sys->presence.i_end_time = p_sys->metadata.i_end_time;
 		}
 
-		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
+		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), 
+				 p_sys->metadata.b_is_audio && !p_sys->metadata.b_is_video ? 
+				 PLUGIN_IMAGE_LARGE_MUSIC : PLUGIN_IMAGE_LARGE_DEFAULT);
+
 		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
 
 		size_t i_bufsize = sizeof(p_sys->presence.sz_state);
@@ -247,7 +250,10 @@ static bool Impl_Update(vlc_discord_t *self)
 					 p_sys->metadata.sz_album);
 		}
 
-		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", p_sys->metadata.sz_title);
+		if (p_sys->settings.b_show_title)
+		{
+			snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", p_sys->metadata.sz_title);
+		}
 	}
 	else
 	{
@@ -257,7 +263,6 @@ static bool Impl_Update(vlc_discord_t *self)
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
 	}
 
-	// bool b_result = p_sys->ipc.pf_set_presence(&p_sys->ipc, p_sys->presence);
 	vlc_mutex_unlock(&p_sys->lock);
 
 	return true;
