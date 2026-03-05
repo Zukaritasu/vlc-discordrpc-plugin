@@ -24,6 +24,7 @@ This is a plugin specifically developed to display the user's activity in VLC on
 - **Time Remaining**: Displays the  current progress time.
 - **Enable or disable rich presence**: In the plugin settings (requires restarting VLC)
 - **Hide Artist or Album**: In the plugin settings (requires restarting VLC)
+- **Hide Title**: In the plugin settings (requires restarting VLC)
 - **Custom Discord Application ID**: In the plugin settings (requires restarting VLC)
 
 > [!IMPORTANT]  
@@ -47,7 +48,7 @@ Remember that if you have VLC open, you must close it to continue, as you must r
 cd "C:\Program Files\VideoLAN\VLC" && vlc --reset-plugins-cache
 ```
 
-### Linux (Debian/Ubuntu)
+### Linux
 
 Plugin installation guide for Linux. First, you must update [VLC Media Player](https://www.videolan.org/) to the latest version available to avoid problems. After checking that you have the latest version of VLC, you need to download the latest version of this add-on by clicking here [Latest Release](https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases).
 
@@ -55,8 +56,16 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 
 *before executing the command, make sure VLC is closed*
 
+#### Debian/Ubuntu
+
 ```bash
-sudo dpkg -i vlc-discordrpc-plugin_1.0.0_amd64.deb
+sudo dpkg -i vlc-discordrpc-plugin_1.1.0_amd64.deb
+```
+
+#### Fedora
+
+```bash
+sudo dnf install vlc-discordrpc-plugin-1.1.0-1.fc41.x86_64.rpm
 ```
 
 ---
@@ -93,6 +102,11 @@ Download [uninstall.ps1](uninstall.ps1) and run it in PowerShell as administrato
   sudo dpkg -r vlc-discordrpc-plugin
   ```
 
+### Fedora
+* ```bash
+  sudo dnf remove vlc-discordrpc-plugin
+  ```
+
 # Discord Information
 
 * [RPC](https://discord.com:2053/developers/docs/topics/rpc)
@@ -102,7 +116,7 @@ This plugin communicates with the Discord Client using **Unix Domain Sockets** o
 
 # Dependencies
 
-- VLC SDK for Windows
+- VLC SDK
 
 # Compatibility
 
