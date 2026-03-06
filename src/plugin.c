@@ -94,6 +94,17 @@ static int Open(vlc_object_t *p_this) {
     
     msg_Info(p_intf, "Starting Discord Rich Presence..");
 
+    // It allows me to debug the plugin only and exclusively on Windows,
+    // since VLC with the -vv parameter does not display debug messages in the console.
+#if defined(_WIN32) && defined(_DEBUG)
+    AllocConsole();
+
+    FILE *fp = freopen("CONOUT$", "w", stdout);
+	if (!fp)
+		fprintf(stderr, "Error redirecting stdout to the console.\n");
+	printf(" > The plugin has been started\n");
+#endif
+
     DiscordRPC_LoadSettings(&p_sys->settings, (void*)p_intf);
     
     memset(&p_sys->discord, 0, sizeof(vlc_discord_t));
@@ -118,9 +129,9 @@ static int Open(vlc_object_t *p_this) {
         free(p_sys);
         return VLC_ENOMEM;
     }
-    
+
     vlc_timer_schedule(p_sys->timer, false, vlc_tick_from_sec(1), vlc_tick_from_sec(2));
-    
+
     return VLC_SUCCESS;
 }
 
