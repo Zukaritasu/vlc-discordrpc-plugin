@@ -36,6 +36,17 @@ typedef void (*DiscordIPCException)(intf_thread_t *p_intf, const char *psz_excep
 #define DISCORD_FIELD_MAX 128
 
 /**
+ * @brief Activity type enum.
+ * * Defines the type of activity being displayed in the Rich Presence.
+ */
+typedef enum ActivityType
+{
+    ACTIVITY_TYPE_PLAYING = 0,
+    ACTIVITY_TYPE_LISTENING = 2,
+    ACTIVITY_TYPE_WATCHING = 3,
+} activity_type_t;
+
+/**
  * @brief Presence metadata structure (Rich Presence state).
  * * Defines the visual information sent to Discord, including strings for
  * status, images, and session timestamps.
@@ -49,6 +60,7 @@ typedef struct
     char sz_small_image[DISCORD_FIELD_MAX]; /**< Key for the small asset image */
     char sz_small_text[DISCORD_FIELD_MAX];  /**< Hover text for the small image */
 
+    activity_type_t i_type;     /**< Activity type (e.g., playing, listening, watching) */
     int64_t i_start_time;     /**< Epoch timestamp for the start of the activity */
     int64_t i_end_time;       /**< Epoch timestamp for the end of the activity */
 } discord_presence_t;

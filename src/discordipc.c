@@ -471,8 +471,9 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 	}
 
 	int offset = snprintf(psz_json, MAX_MESSAGE_SIZE,
-						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{",
-						  (uint64_t)get_pid());
+						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{\"type\":%d, \"name\":\"VLC Media Player\",",
+						  (uint64_t)get_pid(),
+						  (int)dp_presence->i_type);
 
 	bool b_need_comma = false;
 

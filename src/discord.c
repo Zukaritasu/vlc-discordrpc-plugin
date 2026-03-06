@@ -206,6 +206,9 @@ static bool Impl_Update(vlc_discord_t *self)
 
 	memset(&p_sys->presence, 0, sizeof(discord_presence_t));
 
+	// Default activity type
+	p_sys->presence.i_type = ACTIVITY_TYPE_PLAYING;
+
 	if (p_sys->metadata.b_is_playing)
 	{
 		if (p_sys->metadata.b_is_paused)
@@ -226,7 +229,7 @@ static bool Impl_Update(vlc_discord_t *self)
 				 p_sys->metadata.b_is_audio && !p_sys->metadata.b_is_video ? 
 				 PLUGIN_IMAGE_LARGE_MUSIC : PLUGIN_IMAGE_LARGE_DEFAULT);
 
-		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
+		//snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
 
 		size_t i_bufsize = sizeof(p_sys->presence.sz_state);
 
@@ -253,6 +256,15 @@ static bool Impl_Update(vlc_discord_t *self)
 		if (p_sys->settings.b_show_title)
 		{
 			snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", p_sys->metadata.sz_title);
+		}
+
+		if (p_sys->metadata.b_is_video)
+		{
+			p_sys->presence.i_type = ACTIVITY_TYPE_WATCHING;
+		}
+		else if (p_sys->metadata.b_is_audio)
+		{
+			p_sys->presence.i_type = ACTIVITY_TYPE_LISTENING;
 		}
 	}
 	else
