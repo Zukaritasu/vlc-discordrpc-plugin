@@ -96,7 +96,7 @@ static int Open(vlc_object_t *p_this) {
 
     // It allows me to debug the plugin only and exclusively on Windows,
     // since VLC with the -vv parameter does not display debug messages in the console.
-#if defined(_WIN32) && defined(_DEBUG)
+#if defined(_WIN32) && !defined(NDEBUG)
     AllocConsole();
 
     FILE *fp = freopen("CONOUT$", "w", stdout);

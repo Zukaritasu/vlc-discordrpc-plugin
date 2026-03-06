@@ -6,10 +6,20 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 file(GLOB SOURCES "src/*.c")
 
-add_compile_options(-Wall -Wextra -O2 -DNDEBUG)
-
 if(NOT WIN32 AND NOT UNIX)
     message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM_NAME}")
+endif()
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+endif()
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_compile_options(-Wall -Wextra -g -O0)
+else()
+    add_compile_options(-Wall -Wextra -O2 -DNDEBUG)
 endif()
 
 if(WIN32)
@@ -32,7 +42,7 @@ if(WIN32)
         pollfd=WSAPOLLFD
         _WIN32_WINNT=0x0600
     )
-    
+
     target_compile_options(discordrpc_plugin PRIVATE -include winsock2.h)
 
     set_target_properties(discordrpc_plugin PROPERTIES 
