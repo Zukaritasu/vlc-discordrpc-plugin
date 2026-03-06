@@ -61,7 +61,23 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 	char *psz_artist = input_item_GetMeta(p_item, vlc_meta_Artist);
 	char *psz_album = input_item_GetMeta(p_item, vlc_meta_Album);
 
-	if (!psz_title) psz_title = input_item_GetName(p_item);
+	if (!psz_title)
+	{
+		psz_title = input_item_GetName(p_item);
+		if (psz_title)
+		{
+			// Find the last point, but do NOT delete it if it is at the beginning
+			// example: /.mp3
+			for (int64_t i = strlen(psz_title) - 1; i > 0; i--)
+			{
+				if (psz_title[i] == '.')
+				{
+					psz_title[i] = '\0';
+					break;
+				}
+			}
+		}
+	}
 
 	snprintf(p_md->sz_title, sizeof(p_md->sz_title), "%s", psz_title ? psz_title : "VLC Media Player");
 	snprintf(p_md->sz_artist, sizeof(p_md->sz_artist), "%s", psz_artist ? psz_artist : "");
