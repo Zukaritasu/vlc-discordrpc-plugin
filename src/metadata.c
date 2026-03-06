@@ -26,7 +26,7 @@
 #include <vlc_playlist.h>
 #include <time.h>
 
-playlist_info_t GetPlaylistInfo(intf_thread_t *p_intf)
+static playlist_info_t GetPlaylistInfo(intf_thread_t *p_intf)
 {
     playlist_info_t info;
 	memset(&info, 0, sizeof(playlist_info_t));
