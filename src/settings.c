@@ -52,8 +52,9 @@ void DiscordRPC_LoadSettings(vlc_discord_settings_t *p_stgs, void *p_data)
         p_stgs->i_client_id = strtoull(DEFAULT_CLIENT_ID, NULL, 10);
     }
 
-    p_stgs->b_enabled     = var_InheritBool(p_intf, ID_RPC_ENABLED);
-    p_stgs->b_show_album   = var_InheritBool(p_intf, ID_RPC_SHOW_ALBUM);
-    p_stgs->b_show_artist  = var_InheritBool(p_intf, ID_RPC_SHOW_ARTIST);
-    p_stgs->b_show_title  = var_InheritBool(p_intf, ID_RPC_SHOW_TITLE);
+    p_stgs->b_enabled       = var_InheritBool(p_intf, ID_RPC_ENABLED);
+    p_stgs->b_show_album    = var_InheritBool(p_intf, ID_RPC_SHOW_ALBUM);
+    p_stgs->b_show_artist   = var_InheritBool(p_intf, ID_RPC_SHOW_ARTIST);
+    p_stgs->b_show_title    = var_InheritBool(p_intf, ID_RPC_SHOW_TITLE);
+    p_stgs->b_show_playlist = var_InheritBool(p_intf, ID_RPC_SHOW_PLAYLIST);
 }

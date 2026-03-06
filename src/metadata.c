@@ -26,6 +26,28 @@
 #include <vlc_playlist.h>
 #include <time.h>
 
+playlist_info_t GetPlaylistInfo(intf_thread_t *p_intf)
+{
+    playlist_info_t info;
+	memset(&info, 0, sizeof(playlist_info_t));
+    
+    playlist_t *p_playlist = pl_Get(p_intf);
+    if (!p_playlist)
+        return info;
+    
+    playlist_Lock(p_playlist);
+    
+    info.i_total_items = p_playlist->current.i_size;
+    info.i_curr_pos = p_playlist->i_current_index + 1;
+
+	// It is considered a playlist if it has at least two items
+    info.b_has_playlist = (info.i_curr_pos > 0 && info.i_total_items > 1);
+    
+    playlist_Unlock(p_playlist);
+    
+    return info;
+}
+
 bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t *p_md)
 {
 	if (!p_intf || !p_md) return false;
@@ -43,6 +65,7 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 	}
 
 	p_md->b_is_playing = true;
+	p_md->playlist_info = GetPlaylistInfo(p_intf);
 
 	int i_state = var_GetInteger(p_input, "state");
 	p_md->b_is_paused = i_state == PAUSE_S;

@@ -229,8 +229,13 @@ static bool Impl_Update(vlc_discord_t *self)
 				 p_sys->metadata.b_is_audio && !p_sys->metadata.b_is_video ? 
 				 PLUGIN_IMAGE_LARGE_MUSIC : PLUGIN_IMAGE_LARGE_DEFAULT);
 
-		//snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
-
+		if (p_sys->settings.b_show_playlist && p_sys->metadata.playlist_info.b_has_playlist)
+		{
+			snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "Playlist (%d / %d)",
+					p_sys->metadata.playlist_info.i_curr_pos, 
+					p_sys->metadata.playlist_info.i_total_items);
+		}
+		
 		size_t i_bufsize = sizeof(p_sys->presence.sz_state);
 
 		if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0' &&

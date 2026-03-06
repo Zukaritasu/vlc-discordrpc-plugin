@@ -52,6 +52,7 @@ vlc_module_begin()
     add_bool(ID_RPC_SHOW_ARTIST, true, "Show artist name", "Display the artist name in your Discord status.", false)
     add_bool(ID_RPC_SHOW_ALBUM, true, "Show album name", "Display the album title in your Discord status.", false)
     add_bool(ID_RPC_SHOW_TITLE, true, "Show title", "Display the title in your Discord status.", false)
+    add_bool(ID_RPC_SHOW_PLAYLIST, false, "Show playlist", "Display the playlist in your Discord status.", false)
     /** */
 
     set_callbacks(Open, Close)

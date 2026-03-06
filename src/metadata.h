@@ -27,6 +27,19 @@
 #include <vlc_interface.h>
 
 /**
+ * @struct playlist_info_t
+ * @brief Playlist info
+ * * This structure provides information to the rich presence to display
+ * the playlist
+ */
+typedef struct 
+{
+    int i_curr_pos;      /**< Current position (1-based) */
+    int i_total_items;   /**< Total in playlist */
+    bool b_has_playlist; /**< If there is an active playlist */
+} playlist_info_t;
+
+/**
  * @struct vlc_discord_metadata_t
  * @brief Container for media track information.
  * * This structure holds the processed metadata extracted from the VLC 
@@ -45,6 +58,7 @@ typedef struct
     bool b_is_audio;   /**< True if the current media has a audio track */
     bool b_is_paused;  /**< True if playback is currently suspended */
     bool b_is_playing; /**< True if there is an active input item */
+    playlist_info_t playlist_info; /**< Current playlist */
 
 } vlc_discord_metadata_t;
 
