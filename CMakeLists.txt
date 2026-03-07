@@ -6,10 +6,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 
 file(GLOB SOURCES "src/*.c")
 
-if(NOT WIN32 AND NOT UNIX)
-    message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM_NAME}")
-endif()
-
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
 endif()
@@ -29,10 +25,10 @@ if(WIN32)
     pkg_check_modules(VLC vlc-plugin IMPORTED_TARGET)
 
     if(NOT VLC_FOUND)
-    message(FATAL_ERROR 
-        " ERROR: 'vlc-plugin' module not found.\n"
-        " Please install: pacman -S mingw-w64-x86_64-vlc\n"
-    )
+        message(FATAL_ERROR 
+            " ERROR: 'vlc-plugin' module not found.\n"
+            " Please install: pacman -S mingw-w64-x86_64-vlc\n"
+        )
     endif()
 
     set(RESOURCE_FILE "src/resources.rc")
@@ -74,19 +70,50 @@ if(WIN32)
     else()
         message(WARNING "VLC installation directory not found. Please install the plugin manually.")
     endif()
+elseif (APPLE)
+    message(STATUS "Configuring for MacOS...")
 
-else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(VLC REQUIRED libvlc IMPORTED_TARGET)
+
+    add_library(discordrpc_plugin SHARED ${SOURCES})
+
+    set_target_properties(discordrpc_plugin PROPERTIES 
+        PREFIX "lib"
+        SUFFIX ".dylib"
+    )
+
+    target_link_libraries(discordrpc_plugin PRIVATE PkgConfig::VLC)
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(CMAKE_SKIP_INSTALL_RPATH OFF)
+        set(CMAKE_INSTALL_RPATH_USE_LINK_PATH ON)
+    endif()
+
+    pkg_get_variable(VLC_PLUGIN_DIR libvlc pluginsdir)
+
+    if(VLC_PLUGIN_DIR)
+        message(STATUS "VLC Plugins directory found at: ${VLC_PLUGIN_DIR}")
+        install(TARGETS discordrpc_plugin 
+            LIBRARY DESTINATION "${VLC_PLUGIN_DIR}/misc"
+        )
+
+        message(STATUS "Plugin installed to ${VLC_PLUGIN_DIR}/misc/libdiscordrpc_plugin.dylib")
+    else()
+        message(WARNING "VLC installation directory not found. Please install the plugin manually.")
+    endif()
+elseif (UNIX)
     message(STATUS "Configuring for Linux...")
     
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(VLC vlc-plugin IMPORTED_TARGET)
 
     if(NOT VLC_FOUND)
-    message(FATAL_ERROR 
-        " ERROR: 'vlc-plugin' module not found.\n"
-        " For Ubuntu/Debian, please install: sudo apt install libvlccore-dev\n"
-        " For Fedora, please install: sudo dnf install vlc-devel"
-    )
+        message(FATAL_ERROR 
+            " ERROR: 'vlc-plugin' module not found.\n"
+            " For Ubuntu/Debian, please install: sudo apt install libvlccore-dev\n"
+            " For Fedora, please install: sudo dnf install vlc-devel"
+        )
     endif()
 
     add_library(discordrpc_plugin SHARED ${SOURCES})
@@ -111,4 +138,6 @@ else()
     else()
         message(WARNING "VLC installation directory not found. Please install the plugin manually.")
     endif()
+else ()
+    message(FATAL_ERROR "Unsupported platform ${CMAKE_SYSTEM_NAME}")
 endif()
