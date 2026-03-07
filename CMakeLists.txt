@@ -35,7 +35,9 @@ if(WIN32)
     )
     endif()
 
-    add_library(discordrpc_plugin SHARED ${SOURCES})
+    set(RESOURCE_FILE "src/resources.rc")
+
+    add_library(discordrpc_plugin SHARED ${SOURCES} ${RESOURCE_FILE})
 
     target_compile_definitions(discordrpc_plugin PRIVATE 
         poll=WSAPoll 
