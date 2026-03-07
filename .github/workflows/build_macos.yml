@@ -16,7 +16,7 @@ jobs:
       run: |
         brew install vlc pkg-config
 
-    - name: Build
+    - name: Build Plugin
       run: |
         mkdir -p build
         cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
