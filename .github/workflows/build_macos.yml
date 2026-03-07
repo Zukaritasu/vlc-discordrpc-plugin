@@ -1,0 +1,29 @@
+name: Build for macOS
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        brew install vlc pkg-config
+
+    - name: Build Plugin
+      run: |
+        mkdir -p build
+        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+    
+    - name: Archive artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: vlc-discordrpc-plugin
+        path: build/libdiscordrpc_plugin.dylib
