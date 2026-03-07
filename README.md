@@ -4,7 +4,8 @@
   <img src="https://img.shields.io/github/license/Zukaritasu/vlc-discordrpc-plugin?style=flat">
   <img src="https://img.shields.io/github/downloads/Zukaritasu/vlc-discordrpc-plugin/total?style=flat">
   <img src="https://img.shields.io/github/v/release/Zukaritasu/vlc-discordrpc-plugin?style=flat">
-  <img src="https://img.shields.io/badge/Package-.deb-blue?style=flat&logo=linux">
+  <img src="https://img.shields.io/badge/Package-.deb-D70A53?style=flat&logo=debian&logoColor=white">
+  <img src="https://img.shields.io/badge/Package-.rpm-294172?style=flat&logo=fedora&logoColor=white">
   <br><br>
   <img src="https://img.shields.io/badge/Fedora-294172?style=flat&logo=fedora&logoColor=white">
   <img src="https://img.shields.io/badge/Debian-D70A53?style=flat&logo=debian&logoColor=white">
