@@ -1,3 +1,11 @@
+vlc-discordrpc-plugin (1.1.0) stable; urgency=medium
+
+  * Release version 1.1.0.
+  * The plugin now displays the playlist (by default, it is disabled).
+  * The presence type has also been changed to Playing, Listening, and Watching, depending on the type of multimedia content.
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 06 Mar 2026 21:21:00 -0400
+
 vlc-discordrpc-plugin (1.0.0) stable; urgency=medium
 
   * Release version 1.0.0.
