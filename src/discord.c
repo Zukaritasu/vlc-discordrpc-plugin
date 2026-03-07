@@ -356,7 +356,7 @@ static bool Impl_SetEnabled(vlc_discord_t *self, bool b_enable)
 	return true;
 }
 
-bool Discord_CreateInstance(vlc_discord_t *discord, vlc_discord_settings_t stgs, intf_thread_t *p_intf)
+bool DiscordRPC_CreateInstance(vlc_discord_t *discord, vlc_discord_settings_t stgs, intf_thread_t *p_intf)
 {
 	if (!discord)
 	{

@@ -110,7 +110,7 @@ static int Open(vlc_object_t *p_this) {
     
     memset(&p_sys->discord, 0, sizeof(vlc_discord_t));
     
-    if (!Discord_CreateInstance(&p_sys->discord, p_sys->settings, p_intf))
+    if (!DiscordRPC_CreateInstance(&p_sys->discord, p_sys->settings, p_intf))
     {
         msg_Err(p_intf, "An error occurred while creating the Discord instance");
         free(p_sys);

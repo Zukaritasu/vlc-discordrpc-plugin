@@ -95,6 +95,6 @@ typedef struct vlc_discord_t
  * @param p_intf    Pointer to the VLC interface thread.
  * @return true if the instance was created and function pointers assigned.
  */
-bool Discord_CreateInstance(vlc_discord_t *p_discord, vlc_discord_settings_t settings, intf_thread_t *p_intf);
+bool DiscordRPC_CreateInstance(vlc_discord_t *p_discord, vlc_discord_settings_t settings, intf_thread_t *p_intf);
 
 #endif // DISCORD_H
