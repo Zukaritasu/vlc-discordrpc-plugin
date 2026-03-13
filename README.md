@@ -32,6 +32,8 @@ This is a plugin specifically developed to display the user's activity in VLC on
 > [!IMPORTANT]  
 > If you don't know how to create a Discord application ID, don't do it, as doing it wrong can cause the plugin to stop working.
 
+## macOS Support
+
 > [!WARNING]
 > I do not own a Mac, so the code for this operating system has **not been tested or compiled**. To be realistic, **it is probably broken**.
 >
