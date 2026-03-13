@@ -1,0 +1,20 @@
+Discord Rich Presence for VLC - Version History
+===============================================
+
+Version 1.1.0 (2026-03-06)
+--------------------------
+* Added support for playlist display (disabled by default).
+* Improved presence types: Now shows "Playing", "Listening", or "Watching" depending on content.
+* Updated installer and configuration logic.
+
+Version 1.0.0 (2026-02-17)
+--------------------------
+* Initial stable release.
+* Full integration between VLC Media Player and Discord Rich Presence.
+* Showing playback status, title, and progress.
+* Support for Linux (Debian, Fedora) and Windows.
+
+Version 1.0.0-beta1 (2026-02-16)
+--------------------------------
+* Initial beta release for testing.
+* Basic Discord Rich Presence functionality.

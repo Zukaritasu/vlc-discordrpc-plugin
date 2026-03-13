@@ -73,3 +73,6 @@ dkms.conf
 .dockerignore
 Dockerfile
 build_release
+
+nsis/.vscode
+nsis/*.exe
