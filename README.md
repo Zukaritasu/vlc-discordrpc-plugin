@@ -32,6 +32,11 @@ This is a plugin specifically developed to display the user's activity in VLC on
 > [!IMPORTANT]  
 > If you don't know how to create a Discord application ID, don't do it, as doing it wrong can cause the plugin to stop working.
 
+> [!WARNING]
+> I do not own a Mac, so the code for this operating system has **not been tested or compiled**. To be realistic, **it is probably broken**.
+>
+> You will have to fix any compatibility issues and compile it yourself. If you would like to contribute, please feel free to submit a **Pull Request** with the fixes and the compiled binary.
+
 # Installation Guide
 
 ### Windows
@@ -134,3 +139,6 @@ Currently, on Windows, Discord requires a 64-bit operating system to function pr
 | **Windows 11 (64-bit)** | Windows 11 | ✅ VLC supported | ✅ Discord supported | Best compatibility and long-term support |
 | **Linux (64-bit)** | Ubuntu 20.04+, Debian 11+, Fedora 32+, openSUSE 16.2+ | ✅ VLC supported | ✅ Discord supported | Discord does not distribute 32-bit binaries; only web version works on old hardware |
 | **macOS** | macOS 11 Big Sur+ | ✅ VLC supported | ✅ Discord supported | Support for Catalina and earlier ended in 2025; only web version works on older macOS |
+
+> [!IMPORTANT]  
+> Discord no working in your browser, only in the desktop application.
