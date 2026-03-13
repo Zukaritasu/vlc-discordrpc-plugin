@@ -70,8 +70,6 @@ dkms.conf
 /debian/debhelper-build-stamp
 /debian/.debhelper
 
-.dockerignore
-Dockerfile
 build_release
 
 nsis/.vscode

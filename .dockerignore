@@ -1,0 +1,9 @@
+/.images
+/.github
+/build
+/build_release
+/releases
+/installer.nsi
+/nsis
+/.test
+/*.exe

@@ -1,0 +1,23 @@
+FROM fedora:41 AS build-fedora
+ARG VERSION=1.1.0
+ARG NAME=vlc-discordrpc-plugin
+
+RUN dnf install -y gcc-c++ make cmake pkgconfig vlc-devel rpm-build fedora-packager && dnf clean all
+
+WORKDIR /app
+COPY . .
+
+RUN mkdir -p build && cd build && cmake .. && make
+
+RUN rpmdev-setuptree && \
+    mkdir -p ${NAME}-${VERSION} && \
+    cp -r src/ CMakeLists.txt LICENSE README.md INSTALL ${NAME}-${VERSION}/ && \
+    tar -czvf $(rpm --eval '%{_sourcedir}')/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION} && \
+    rpmbuild -ba fedora/vlc-discordrpc-plugin.spec
+
+RUN mkdir -p /outputs/fedora/${VERSION} && \
+    cp $(rpm --eval '%{_rpmdir}')/x86_64/${NAME}-*.rpm /outputs/fedora/${VERSION} && \
+    cp $(rpm --eval '%{_srcrpmdir}')/${NAME}-*.src.rpm /outputs/fedora/${VERSION}
+
+FROM scratch AS exporter
+COPY --from=build-fedora /outputs/fedora .

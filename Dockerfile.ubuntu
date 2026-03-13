@@ -1,0 +1,21 @@
+FROM ubuntu:24.04 AS build-ubuntu
+ARG VERSION=1.1.0
+ARG NAME=vlc-discordrpc-plugin
+
+RUN apt-get update && apt-get install -y dos2unix \
+    build-essential cmake pkg-config libvlccore-dev devscripts debhelper vlc && \
+    apt-get clean
+
+WORKDIR /app
+COPY . .
+
+RUN find debian/ -type f -exec dos2unix {} +
+
+RUN mkdir -p build && cd build && cmake .. && make
+RUN dpkg-buildpackage -us -uc -b
+
+RUN mkdir -p /outputs/debian/${VERSION} && \
+    cp ../${NAME}_${VERSION}* /outputs/debian/${VERSION}
+
+FROM scratch AS exporter
+COPY --from=build-ubuntu /outputs/debian .
