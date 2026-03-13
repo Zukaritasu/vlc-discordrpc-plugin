@@ -97,7 +97,7 @@ Find the menu called Interface and, within it, the submenu called Control interf
 # Uninstall
 
 ### Windows
-Download [uninstall.ps1](uninstall.ps1) and run it in PowerShell as administrator.
+Run the PowerShell script in administrator mode found in the compressed file [vlc-discordrpc-plugin_1.1.0_win_x64.zip](https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases/download/1.1.0/vlc-discordrpc-plugin_1.1.0_win_x64.zip).
 
 ### Linux (Debian/Ubuntu)
 * ```bash
