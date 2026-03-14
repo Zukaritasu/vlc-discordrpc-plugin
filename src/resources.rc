@@ -11,12 +11,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName",      "Zukadev"
-            VALUE "FileDescription",  "Discord Rich Plugin for VLC"
+            VALUE "FileDescription",  "Discord Rich Presence for VLC"
             VALUE "FileVersion",      "1.1.0"
             VALUE "InternalName",     "libdiscordrpc_plugin"
             VALUE "LegalCopyright",   "Copyright (C) 2026 Zukaritasu"
             VALUE "OriginalFilename", "libdiscordrpc_plugin.dll"
-            VALUE "ProductName",      "Discord RPC"
+            VALUE "ProductName",      "discord_rpc"
             VALUE "ProductVersion",   "1.1.0"
         END
     END
