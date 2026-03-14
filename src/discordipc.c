@@ -57,6 +57,10 @@ typedef int pipe_t;
 #define MAX_MESSAGE_SIZE      2048
 #define NONCE_SIZE            16
 
+#define FREE_XDG_TMPDIR(p_xdg, p_tmp) \
+	if (p_xdg && p_xdg != p_tmp) free(p_xdg); \
+	if (p_tmp) free(p_tmp);
+
 /**
  * @struct vlc_discord_ipc_data_t
  * @brief Internal private data for the Discord IPC instance.
@@ -585,18 +589,34 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	}
 	
 #elif defined(__linux__) || defined(__APPLE__)
-	const char *psz_temp_path = getenv("XDG_RUNTIME_DIR");
-	const char* psz_fallback_path = "/tmp";
+	char *psz_xdg = getenv("XDG_RUNTIME_DIR");
+	if (psz_xdg) psz_xdg = strdup(psz_xdg);
 
-	if (!psz_temp_path)
-		psz_temp_path = psz_fallback_path;
+	char *psz_tmp = getenv("TMPDIR");
+	if (psz_tmp) psz_tmp = strdup(psz_tmp);
+
+	if (!psz_xdg)
+	{
+		psz_xdg = psz_tmp;
+		if (!psz_xdg)
+		{
+			psz_xdg = strdup("/tmp");
+			if (!psz_xdg)
+			{
+				vlc_mutex_unlock(&p_sys->lock);
+				return false;
+			}
+		}
+	}
 
 	const char *sub_paths[] = 
 	{
+
         "%s/discord-ipc-%d",
+#ifdef __linux__
         "%s/snap.discord/discord-ipc-%d",				/* Snap */
         "%s/app/com.discordapp.Discord/discord-ipc-%d", /* Flatpak */
-		"/tmp/discord-ipc-%d"
+#endif
     };
 
     int num_paths = sizeof(sub_paths) / sizeof(sub_paths[0]);
@@ -607,12 +627,16 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 		{
             char socket_path[SOCKET_PATH_MAX];
             if (strstr(sub_paths[p], "%s"))
-				snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_temp_path, i);
+				snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_xdg, i);
 			else snprintf(socket_path, sizeof(socket_path), sub_paths[p], i);
 
             p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
             if (p_sys->handle == INVALID_PIPE)
-				continue;
+			{
+				FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
+				vlc_mutex_unlock(&p_sys->lock);
+				return false;
+			}
 
             struct sockaddr_un addr;
             memset(&addr, 0, sizeof(addr));
@@ -624,13 +648,17 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
                 if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL)) 
 				{
                     p_sys->b_connected = true;
+					FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
 					vlc_mutex_unlock(&p_sys->lock);
                     return true;
                 }
             }
             close(p_sys->handle);
+			p_sys->handle = INVALID_PIPE;
         }
     }
+
+	FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
 	
 #else
 	#error “Platform not supported for this Discord plugin”
