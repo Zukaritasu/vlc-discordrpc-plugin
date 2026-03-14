@@ -626,9 +626,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
         for (int p = 0; p < num_paths; p++) 
 		{
             char socket_path[SOCKET_PATH_MAX];
-            if (strstr(sub_paths[p], "%s"))
-				snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_xdg, i);
-			else snprintf(socket_path, sizeof(socket_path), sub_paths[p], i);
+            snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_xdg, i);
 
             p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
             if (p_sys->handle == INVALID_PIPE)
