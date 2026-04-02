@@ -416,7 +416,7 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 #elif defined(__linux__) || defined(__APPLE__)
 	close(p_sys->handle);
 #else
-	#error “Platform not supported for this Discord plugin”
+	#error “Platform not supported for this plugin”
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 	p_sys->handle = INVALID_PIPE;
 	p_sys->b_connected = false;
@@ -540,7 +540,7 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 #elif defined(__linux__) || defined(__APPLE__)
 		close(p_sys->handle);
 #else
-	#error “Platform not supported for this Discord plugin”
+	#error “Platform not supported for this plugin”
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 		p_sys->handle = INVALID_PIPE;
 		p_sys->b_connected = false;
@@ -659,7 +659,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
 	
 #else
-	#error “Platform not supported for this Discord plugin”
+	#error “Platform not supported for this plugin”
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 
 	if (p_sys->pf_err)
