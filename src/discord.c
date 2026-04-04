@@ -98,6 +98,11 @@ static void Discord_Exception(intf_thread_t *p_intf, const char *psz_msg)
 	}
 }
 
+#define discord_call_sleep(ms) \
+	vlc_mutex_lock(&p_sys->lock); \
+	vlc_cond_timedwait(&sleep_cond, &p_sys->lock, mdate() + vlc_tick_from_sec(ms)); \
+	vlc_mutex_unlock(&p_sys->lock);
+
 /**
  * @brief Worker thread function for Discord Rich Presence.
  * * Handles the lifecycle of the Discord IPC connection, including connection attempts,
@@ -109,11 +114,14 @@ static void *Discord_Callbacks(void *p_data)
 {
 	vlc_discord_t *self = (vlc_discord_t *)p_data;
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
+	vlc_cond_t sleep_cond;
 
 	if (!DiscordRPC_CreateIPC(&p_sys->ipc, p_sys->p_intf, Discord_Exception))
 	{
 		return NULL;
 	}
+
+	vlc_cond_init(&sleep_cond);
 
 	while (p_sys->b_run)
 	{
@@ -122,7 +130,7 @@ static void *Discord_Callbacks(void *p_data)
 			// TODO: casting int64_t to uint64_t
 			if (p_sys->ipc.pf_connect(&p_sys->ipc, (uint64_t)p_sys->settings.i_client_id))
 				break;
-			msleep(vlc_tick_from_sec(2));
+			discord_call_sleep(2);
 		}
 
 		if (!p_sys->b_run)
@@ -142,7 +150,7 @@ static void *Discord_Callbacks(void *p_data)
 			if (!p_sys->ipc.pf_is_connected(&p_sys->ipc))
 				break;
 
-			msleep(vlc_tick_from_sec(2));
+			discord_call_sleep(2);
 		}
 
 		if (!p_sys->b_run)
@@ -154,6 +162,8 @@ static void *Discord_Callbacks(void *p_data)
 	p_sys->ipc.pf_destroy(&p_sys->ipc);
 
 	memset(&p_sys->ipc, 0, sizeof(vlc_discord_ipc_t));
+
+	vlc_cond_destroy(&sleep_cond);
 
 	return NULL;
 }
