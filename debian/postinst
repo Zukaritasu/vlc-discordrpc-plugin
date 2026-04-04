@@ -7,16 +7,16 @@ case "$1" in
 		
 		if command -v vlc >/dev/null 2>&1; then
 			vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
-			echo -e "   \033[0;32m[+]\033[0m VLC plugins cache updated successfully."
+			echo "   \033[0;32m[+]\033[0m VLC plugins cache updated successfully."
 		else
-			echo -e "   \033[0;33m[!]\033[0m warning: VLC binary not found. Please ensure VLC is installed to use this plugin."
+			echo "   \033[0;33m[!]\033[0m warning: VLC binary not found. Please ensure VLC is installed to use this plugin."
 		fi
 
 		if [ -x /usr/bin/vlcrcedit ]; then
 			/usr/bin/vlcrcedit --install >/dev/null 2>&1 || true
-			echo -e "   \033[0;32m[+]\033[0m VLC vlcrc file edit updated successfully."
+			echo "   \033[0;32m[+]\033[0m VLC vlcrc file edit updated successfully."
 		else
-			echo -e "   \033[0;33m[!]\033[0m warning: vlcrcedit not found. Please ensure vlcrcedit is installed to update VLC vlcrc file."
+			echo "   \033[0;33m[!]\033[0m warning: vlcrcedit not found. Please ensure vlcrcedit is installed to update VLC vlcrc file."
 		fi
 	;;
 
