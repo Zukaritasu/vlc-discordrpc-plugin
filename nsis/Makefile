@@ -1,5 +1,5 @@
 CXX      = g++
-CXXFLAGS = -Os -Wall -Wextra -Wpedantic -DNDEBUG
+CXXFLAGS = -O2 -Wall -Wextra -Wpedantic -DNDEBUG
 LDFLAGS  = -s -static -static-libgcc -static-libstdc++
 
 ifeq ($(OS),Windows_NT)
@@ -19,7 +19,4 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
 
 clean:
-ifneq ($(OS),Windows_NT)
-	@if exist $(TARGET) $(RM) $(TARGET)
-else
 	$(RM) $(TARGET)
