@@ -1,4 +1,23 @@
 #!/usr/bin/make -f
 
+.PHONY: force
+build: force
+
 %:
 	dh $@ --buildsystem=cmake
+
+override_dh_auto_build:
+	dh_auto_build
+	make -C nsis
+
+override_dh_install:
+	dh_install
+	install -D nsis/vlcrcedit debian/vlc-discordrpc-plugin/usr/bin/vlcrcedit
+
+override_dh_clean:
+	dh_clean
+	make -C nsis clean
+
+override_dh_dwz:
+	true
+
