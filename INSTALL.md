@@ -98,13 +98,6 @@ If you prefer to install it manually:
   ```bash
   sudo cp build/libdiscordrpc_plugin.so /usr/lib/x86_64-linux-gnu/vlc/plugins/misc/
   ```
-
-* **Per-user (Recommended for testing):**
-  ```bash
-  mkdir -p ~/.local/lib/vlc/plugins/misc/
-  cp build/libdiscordrpc_plugin.so ~/.local/lib/vlc/plugins/misc/
-  ```
-
 ### 5. Update Plugin Cache (Important)
 After installation, you **must** update the VLC plugin cache. Run the following command in your terminal:
 
