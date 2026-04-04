@@ -2,7 +2,7 @@
 
 NAME="vlc-discordrpc-plugin"
 RELEASES_DIR="./releases"
-CURRENT_VERSION="1.1.0"
+CURRENT_VERSION="1.2.0"
 
 mkdir -p "${RELEASES_DIR}/fedora"
 mkdir -p "${RELEASES_DIR}/ubuntu"
