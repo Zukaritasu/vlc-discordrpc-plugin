@@ -1,3 +1,11 @@
+vlc-discordrpc-plugin (1.2.0) stable; urgency=medium
+
+  * Release version 1.2.0.
+  * The static Rich Presence has been replaced with a user-customizable Rich Presence using tokens
+  * In addition, several internal bugs were fixed.
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Sat, 04 Apr 2026 12:12:00 -0400
+
 vlc-discordrpc-plugin (1.1.0) stable; urgency=medium
 
   * Release version 1.1.0.
