@@ -59,10 +59,11 @@ typedef struct
     char sz_large_text[DISCORD_FIELD_MAX];  /**< Hover text for the large image */
     char sz_small_image[DISCORD_FIELD_MAX]; /**< Key for the small asset image */
     char sz_small_text[DISCORD_FIELD_MAX];  /**< Hover text for the small image */
+    char sz_name[DISCORD_FIELD_MAX];        /**< Presence name (e.g., "Artist") */
 
-    activity_type_t i_type;     /**< Activity type (e.g., playing, listening, watching) */
-    int64_t i_start_time;     /**< Epoch timestamp for the start of the activity */
-    int64_t i_end_time;       /**< Epoch timestamp for the end of the activity */
+    activity_type_t i_type;                 /**< Activity type (e.g., playing, listening, watching) */
+    int64_t i_start_time;                   /**< Epoch timestamp for the start of the activity */
+    int64_t i_end_time;                     /**< Epoch timestamp for the end of the activity */
 } discord_presence_t;
 
 /**

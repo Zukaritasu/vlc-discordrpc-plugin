@@ -2,7 +2,15 @@ CXX      = g++
 CXXFLAGS = -Os -Wall -Wextra -Wpedantic -DNDEBUG
 LDFLAGS  = -s -static -static-libgcc -static-libstdc++
 
-TARGET   = vlcrcedit.exe
+ifeq ($(OS),Windows_NT)
+	EXT_EXECUTABLE = .exe
+	RM = del /Q
+else
+	EXT_EXECUTABLE =
+	RM = rm -f
+endif
+
+TARGET   = vlcrcedit$(EXT_EXECUTABLE)
 SRC      = vlcrcedit.cpp
 
 all: $(TARGET)
@@ -11,4 +19,7 @@ $(TARGET): $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
 
 clean:
-	@if exist $(TARGET) del $(TARGET)
+ifneq ($(OS),Windows_NT)
+	@if exist $(TARGET) $(RM) $(TARGET)
+else
+	$(RM) $(TARGET)

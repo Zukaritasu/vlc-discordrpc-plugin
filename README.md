@@ -24,10 +24,10 @@ This is a plugin specifically developed to display the user's activity in VLC on
 - **Status support**: Shows if you are Playing, Paused, or Stopped.
 - **Time remaining**: Displays the  current progress time.
 - **Enable or disable rich presence**: In the plugin settings (requires restarting VLC)
-- **Show artist or album**: In the plugin settings (requires restarting VLC)
-- **Show title**: In the plugin settings (requires restarting VLC)
+- **Enable or disable details or state**: In the plugin settings (requires restarting VLC)
+- **Customization of details and status**: In the plugin settings (requires restarting VLC)
+- **Show artist or album**: 
 - **Custom Discord Application ID**: In the plugin settings (requires restarting VLC)
-- **Show current playlist**: In the plugin settings (requires restarting VLC). *Disabled by default.*
 
 > [!IMPORTANT]  
 > If you don't know how to create a Discord application ID, don't do it, as doing it wrong can cause the plugin to stop working.

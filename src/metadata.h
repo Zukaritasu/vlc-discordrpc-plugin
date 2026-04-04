@@ -25,6 +25,7 @@
 #include <vlc_common.h>
 #include <vlc_plugin.h>
 #include <vlc_interface.h>
+#include <vlc_arrays.h>
 
 /**
  * @struct playlist_info_t
@@ -71,5 +72,14 @@ typedef struct
  * @return true if metadata was successfully retrieved, false otherwise.
  */
 bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t *p_md);
+
+/**
+ * @brief Converts the metadata structure into a dictionary format.
+ * * This function is intended to transform the structured metadata into a key-value
+ * dictionary that can be used for dynamic formatting of the Discord Rich Presence fields.
+ * * @param p_md   Pointer to the metadata structure containing media information.
+ * @param p_dict  Pointer to the dictionary structure to be filled with metadata entries.
+ */
+void DiscordRPC_MetadataToDictionary(vlc_discord_metadata_t *p_md, vlc_dictionary_t *p_dict);
 
 #endif // METADATA_H

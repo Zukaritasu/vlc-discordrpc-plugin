@@ -71,6 +71,7 @@ dkms.conf
 /debian/.debhelper
 
 build_release
+build_debug
 
 nsis/.vscode
 nsis/*.exe
