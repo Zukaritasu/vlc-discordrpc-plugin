@@ -18,6 +18,8 @@
 
 #include "format.h"
 
+#include <ctype.h>
+
 static bool is_separator(char c)
 {
     return c == '-' || c == '/' || c == '~' || c == '|';

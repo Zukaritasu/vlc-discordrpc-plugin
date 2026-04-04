@@ -80,6 +80,8 @@ typedef struct
 
 } vlc_discord_internal_data_t;
 
+static const char* const PLUGIN_VLC_TITLE = "VLC Media Player";
+
 /**
  * @brief Internal exception handler for Discord IPC events.
  * * Logs internal messages and errors from the Discord IPC layer to the
@@ -251,14 +253,14 @@ static bool Impl_Update(vlc_discord_t *self)
 		else if (p_sys->metadata.b_is_audio)
 			p_sys->presence.i_type = ACTIVITY_TYPE_LISTENING;
 
-		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), p_sys->metadata.sz_artist[0] == '\0' ? 
-			"VLC Media Player" : p_sys->metadata.sz_artist);
+		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), "%s", p_sys->metadata.sz_artist[0] == '\0' ? 
+			PLUGIN_VLC_TITLE : p_sys->metadata.sz_artist);
 	}
 	else
 	{
 		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
-		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
-		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), "VLC Media Player");
+		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), PLUGIN_VLC_TITLE);
+		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), PLUGIN_VLC_TITLE);
 
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
 	}
