@@ -75,3 +75,4 @@ build_debug
 
 nsis/.vscode
 nsis/*.exe
+nsis/vlcrcedit
