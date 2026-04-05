@@ -48,14 +48,26 @@ vlc_module_begin()
     set_subcategory(SUBCAT_INTERFACE_CONTROL)
     set_capability("interface", 0)
 
-    /** settings */
-    add_string(ID_RPC_CLIENT_ID, DEFAULT_CLIENT_ID, "Discord Application ID", "Enter the Client ID obtained from the Discord Developer Portal.", false)
-    add_bool(ID_RPC_ENABLED, true, "Enable Rich Presence", "Enable or disable Discord Rich Presence integration.", false)
-    add_bool(ID_RPC_SHOW_ARTIST, true, "Show artist name", "Display the artist name in your Discord status.", false)
-    add_bool(ID_RPC_SHOW_ALBUM, true, "Show album name", "Display the album title in your Discord status.", false)
-    add_bool(ID_RPC_SHOW_TITLE, true, "Show title", "Display the title in your Discord status.", false)
-    add_bool(ID_RPC_SHOW_PLAYLIST, false, "Show playlist", "Display the playlist in your Discord status.", false)
-    /** */
+    // settings
+    
+    set_section("Discord config", NULL)
+
+    add_string(ID_RPC_CLIENT_ID, DEFAULT_CLIENT_ID, "Application ID", "Enter the application ID obtained from the Discord Developer Portal.", false)
+  
+    set_section("Formats", NULL)
+
+    add_string(ID_RPC_DETAILS_FORMAT, "${title}", "Details", "Format string for the details field.", false)
+    add_string(ID_RPC_STATE_FORMAT, "${artist} - ${album}", "State", "Format string for the state field.", false)
+    add_string(ID_RPC_LARGE_TEXT_FORMAT, "", "Large text", "Format string for the large text.", false)
+    add_string(ID_RPC_SMALL_TEXT_FORMAT, "${status}", "Small text", "Format string for the small text.", false)
+
+    set_section("Options", NULL)
+
+    add_bool(ID_RPC_ENABLE, true, "Enable Rich Presence", "Enable or disable Discord Rich Presence integration.", false)
+    add_bool(ID_RPC_ENABLE_DETAILS, true, "Enable details", "Enable or disable the details field in Discord Rich Presence.", false)
+    add_bool(ID_RPC_ENABLE_STATE, true, "Enable state", "Enable or disable the state field in Discord Rich Presence.", false)
+
+    // end - settings
 
     set_callbacks(Open, Close)
 vlc_module_end()
@@ -156,6 +168,8 @@ static void Close(vlc_object_t *p_this) {
     
     if (p_sys->discord.pf_close) p_sys->discord.pf_close(&p_sys->discord);
     if (p_sys->discord.pf_destroy) p_sys->discord.pf_destroy(&p_sys->discord);
+
+    DiscordRPC_FreeSettings(&p_sys->settings);
     
     free(p_sys);
 }

@@ -10,7 +10,25 @@
 #include <string>
 #include <algorithm>
 
+#ifdef _WIN32
+	#include <shlobj.h>
+	#include <knownfolders.h>
+#endif // _WIN32
+
 #define PLUGIN_NAMESPACE "discord_rpc"
+
+#ifdef _WIN32
+std::string WstrToUtf8(const std::wstring& wstr) 
+{
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
+    
+    std::string strTo(size_needed, 0);
+    
+    WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &strTo[0], size_needed, NULL, NULL);
+    
+    return strTo;
+}
+#endif // _WIN32
 
 static std::string trim(std::string s)
 {
@@ -291,21 +309,37 @@ int main(int argc, char const *argv[])
         return 1;
     }
 
-    auto appdata = getenv("APPDATA");
-    if (!appdata)
+#ifdef _WIN32
+    PWSTR pathTmp = NULL;
+	HRESULT hr = SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, NULL, &pathTmp);
+    if (FAILED(hr))
     {
-        std::cerr << "APPDATA environment variable not found" << std::endl;
+        std::cerr << "ERROR: " << hr << std::endl;
         return 1;
     }
+	
+	std::string roamingAppData = WstrToUtf8(pathTmp);
+	CoTaskMemFree(pathTmp);
 
-    std::string env = appdata;
-    if (env.empty())
-    {
-        std::cerr << "Invalid APPDATA environment variable" << std::endl;
-        return 1;
-    }
-
-    env += "\\vlc\\vlcrc";
+    std::string env = roamingAppData + "\\vlc\\vlcrc";
+	
+#elif defined(__linux__)
+	std::string env;
+	auto xdg_config = getenv("XDG_CONFIG_HOME");
+	
+	if (xdg_config)
+		env = std::string(xdg_config) + "/vlc/vlcrc";
+	else
+	{
+		const char* s_user = getenv("SUDO_USER");
+		if (s_user)
+			env = "/home/" + std::string(s_user) + "/.config/vlc/vlcrc";
+		else
+			env = std::string(getenv("HOME")) + "/.config/vlc/vlcrc";
+	}
+#else
+	#error "Platform not supported"
+#endif // _WIN32 || __linux__
 
     struct stat st;
     if (stat(env.c_str(), &st) != 0) // file exists?
@@ -316,7 +350,7 @@ int main(int argc, char const *argv[])
 
     try
     {
-        if (std::string(argv[1]) == "install")
+        if (std::string(argv[1]) == "--install")
         {
             VlcRc rc;
             rc.load(env);
@@ -346,7 +380,7 @@ int main(int argc, char const *argv[])
                 rc.save(env);
             }
         }
-        else if (std::string(argv[1]) == "uninstall")
+        else if (std::string(argv[1]) == "--uninstall")
         {
             VlcRc rc;
             rc.load(env);

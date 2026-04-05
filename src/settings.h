@@ -24,12 +24,16 @@
 
 /* VLC Module Configuration IDs */
 #define CFG_PREFIX "discord-"
-#define ID_RPC_CLIENT_ID      CFG_PREFIX "client-id"
-#define ID_RPC_ENABLED        CFG_PREFIX "enabled"
-#define ID_RPC_SHOW_TITLE     CFG_PREFIX "show-title"
-#define ID_RPC_SHOW_ALBUM     CFG_PREFIX "show-album"
-#define ID_RPC_SHOW_ARTIST    CFG_PREFIX "show-artist"
-#define ID_RPC_SHOW_PLAYLIST  CFG_PREFIX "show-playlist"
+#define ID_RPC_CLIENT_ID         CFG_PREFIX "client-id"
+#define ID_RPC_ENABLE            CFG_PREFIX "enabled"
+
+#define ID_RPC_DETAILS_FORMAT    CFG_PREFIX "details-format"
+#define ID_RPC_STATE_FORMAT      CFG_PREFIX "state-format"
+#define ID_RPC_LARGE_TEXT_FORMAT CFG_PREFIX "large-text-format"
+#define ID_RPC_SMALL_TEXT_FORMAT CFG_PREFIX "small-text-format"
+
+#define ID_RPC_ENABLE_DETAILS    CFG_PREFIX "enable-details-field"
+#define ID_RPC_ENABLE_STATE      CFG_PREFIX "enable-state-field"
 
 /**
  * @brief Default Discord Application ID.
@@ -45,11 +49,14 @@
 typedef struct 
 {
     uint64_t i_client_id;      /**< Discord Application Client ID */
-    bool     b_enabled;        /**< Master switch for the plugin */
-    bool     b_show_artist;    /**< Toggle to privacy-mask the artist name */
-    bool     b_show_album;     /**< Toggle to privacy-mask the album name */
-    bool     b_show_title;     /**< Toggle to privacy-mask the title */
-    bool     b_show_playlist;  /**< Toggle to privacy-mask the Playlist */
+    bool     b_enable;        /**< Master switch for the plugin */
+    bool     b_enable_details; /**< Toggle for the details field in Rich Presence */
+    bool     b_enable_state;   /**< Toggle for the state field in Rich Presence */
+
+    char*    psz_details_format;    /**< Format string for the details field */
+    char*    psz_state_format;      /**< Format string for the state field */
+    char*    psz_large_text_format; /**< Format string for the large image text */
+    char*    psz_small_text_format; /**< Format string for the small image text */
 } vlc_discord_settings_t;
 
 /**
@@ -60,5 +67,7 @@ typedef struct
  * @param p_intf Pointer to the VLC interface thread (intf_thread_t).
  */
 void DiscordRPC_LoadSettings(vlc_discord_settings_t *p_stgs, void *p_intf);
+
+void DiscordRPC_FreeSettings(vlc_discord_settings_t *p_stgs);
 
 #endif // SETTINGS_H

@@ -9,7 +9,7 @@
 !define MUI_UNICON ".images\vlc_icon.ico"
 
 Name "Discord Rich Presence for VLC"
-OutFile "vlc-discordrpc-setup_1.1.0_win_x64.exe"
+OutFile "releases\windows\${VERSION}\vlc-discordrpc-setup_${VERSION}_win_x64.exe"
 InstallDir "$PROGRAMFILES64\vlc-discordrpc-plugin"
 RequestExecutionLevel admin
 
@@ -60,10 +60,10 @@ Section "Install plugin"
 
 	StrCpy $R1 "$R0\plugins\misc"
 	SetOutPath "$R1"
-	File "releases\windows\1.1.0\${DLLNAME}"
+	File "releases\windows\${VERSION}\${DLLNAME}"
 
 	DetailPrint "Configuring VLC interface..."
-	nsExec::ExecToLog '"$INSTDIR\vlcrcedit.exe" install'
+	nsExec::ExecToLog '"$INSTDIR\vlcrcedit.exe" --install'
 
 	WriteUninstaller "$INSTDIR\uninstall.exe"
 
@@ -72,7 +72,7 @@ Section "Install plugin"
 	WriteRegStr HKLM "${UNINST_KEY}" "DisplayName" "Discord Rich Presence for VLC"
 	WriteRegStr HKLM "${UNINST_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe"'
 	WriteRegStr HKLM "${UNINST_KEY}" "DisplayIcon" "$INSTDIR\uninstall.exe"
-	WriteRegStr HKLM "${UNINST_KEY}" "DisplayVersion" "1.1.0"
+	WriteRegStr HKLM "${UNINST_KEY}" "DisplayVersion" "${VERSION}"
 	WriteRegStr HKLM "${UNINST_KEY}" "Publisher" "Zukaritasu"
 	WriteRegDWORD HKLM "${UNINST_KEY}" "NoModify" 1
 	WriteRegDWORD HKLM "${UNINST_KEY}" "NoRepair" 1
@@ -103,7 +103,7 @@ Section "Uninstall"
 	ProcessNotFound:
 
 	DetailPrint "Cleaning up VLC configuration..."
-	nsExec::ExecToLog '"$INSTDIR\vlcrcedit.exe" uninstall'
+	nsExec::ExecToLog '"$INSTDIR\vlcrcedit.exe" --uninstall'
 
 	SetRegView 64
 	ReadRegStr $R0 HKLM "Software\VideoLAN\VLC" "InstallDir"

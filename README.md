@@ -24,10 +24,10 @@ This is a plugin specifically developed to display the user's activity in VLC on
 - **Status support**: Shows if you are Playing, Paused, or Stopped.
 - **Time remaining**: Displays the  current progress time.
 - **Enable or disable rich presence**: In the plugin settings (requires restarting VLC)
-- **Show artist or album**: In the plugin settings (requires restarting VLC)
-- **Show title**: In the plugin settings (requires restarting VLC)
+- **Enable or disable details or state**: In the plugin settings (requires restarting VLC)
+- **Customization of details and status**: In the plugin settings (requires restarting VLC)
+- **Show artist or album**: 
 - **Custom Discord Application ID**: In the plugin settings (requires restarting VLC)
-- **Show current playlist**: In the plugin settings (requires restarting VLC). *Disabled by default.*
 
 > [!IMPORTANT]  
 > If you don't know how to create a Discord application ID, don't do it, as doing it wrong can cause the plugin to stop working.
@@ -68,13 +68,13 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 #### Debian/Ubuntu
 
 ```bash
-sudo dpkg -i vlc-discordrpc-plugin_1.1.0_amd64.deb
+sudo dpkg -i vlc-discordrpc-plugin_1.2.0_amd64.deb
 ```
 
 #### Fedora
 
 ```bash
-sudo dnf install vlc-discordrpc-plugin-1.1.0-1.fc41.x86_64.rpm
+sudo dnf install vlc-discordrpc-plugin-1.2.0-1.fc41.x86_64.rpm
 ```
 
 ---
@@ -104,7 +104,8 @@ Find the menu called Interface and, within it, the submenu called Control interf
 # Uninstall
 
 ### Windows
-Run the PowerShell script in administrator mode found in the compressed file [vlc-discordrpc-plugin_1.1.0_win_x64.zip](https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases/download/1.1.0/vlc-discordrpc-plugin_1.1.0_win_x64.zip).
+
+To uninstall the plugin, go to Control Panel > Programs and Features, find 'Discord Rich Presence for VLC', and uninstall it.
 
 ### Linux (Debian/Ubuntu)
 * ```bash

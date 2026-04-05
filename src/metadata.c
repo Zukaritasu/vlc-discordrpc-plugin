@@ -125,3 +125,22 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 	
 	return true;
 }
+
+void DiscordRPC_MetadataToDictionary(vlc_discord_metadata_t *p_md, vlc_dictionary_t *p_dict)
+{
+	char sz_number[12];
+
+	vlc_dictionary_init(p_dict, 0);
+	
+	vlc_dictionary_insert(p_dict, "title", p_md->sz_title);
+
+	vlc_dictionary_insert(p_dict, "artist", p_md->sz_artist);
+	vlc_dictionary_insert(p_dict, "album", p_md->sz_album);
+	vlc_dictionary_insert(p_dict, "status", p_md->b_is_playing ? (p_md->b_is_paused ? "Paused" : "Playing") : "Stopped");
+
+	snprintf(sz_number, sizeof(sz_number), "%d", p_md->playlist_info.i_curr_pos);
+	vlc_dictionary_insert(p_dict, "pls_pos", sz_number);
+
+	snprintf(sz_number, sizeof(sz_number), "%d", p_md->playlist_info.i_total_items);
+	vlc_dictionary_insert(p_dict, "pls_total", sz_number);
+}

@@ -52,9 +52,20 @@ void DiscordRPC_LoadSettings(vlc_discord_settings_t *p_stgs, void *p_data)
         p_stgs->i_client_id = strtoull(DEFAULT_CLIENT_ID, NULL, 10);
     }
 
-    p_stgs->b_enabled       = var_InheritBool(p_intf, ID_RPC_ENABLED);
-    p_stgs->b_show_album    = var_InheritBool(p_intf, ID_RPC_SHOW_ALBUM);
-    p_stgs->b_show_artist   = var_InheritBool(p_intf, ID_RPC_SHOW_ARTIST);
-    p_stgs->b_show_title    = var_InheritBool(p_intf, ID_RPC_SHOW_TITLE);
-    p_stgs->b_show_playlist = var_InheritBool(p_intf, ID_RPC_SHOW_PLAYLIST);
+    p_stgs->b_enable         = var_InheritBool(p_intf, ID_RPC_ENABLE);
+    p_stgs->b_enable_details = var_InheritBool(p_intf, ID_RPC_ENABLE_DETAILS);
+    p_stgs->b_enable_state   = var_InheritBool(p_intf, ID_RPC_ENABLE_STATE);
+
+    p_stgs->psz_details_format = var_InheritString(p_intf, ID_RPC_DETAILS_FORMAT);
+    p_stgs->psz_state_format   = var_InheritString(p_intf, ID_RPC_STATE_FORMAT);
+    p_stgs->psz_large_text_format = var_InheritString(p_intf, ID_RPC_LARGE_TEXT_FORMAT);
+    p_stgs->psz_small_text_format = var_InheritString(p_intf, ID_RPC_SMALL_TEXT_FORMAT);
+}
+
+void DiscordRPC_FreeSettings(vlc_discord_settings_t *p_stgs)
+{
+    free(p_stgs->psz_details_format);
+    free(p_stgs->psz_state_format);
+    free(p_stgs->psz_large_text_format);
+    free(p_stgs->psz_small_text_format);
 }

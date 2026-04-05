@@ -457,12 +457,13 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 	}
 
 	char s_state[DISCORD_FIELD_MAX], s_details[DISCORD_FIELD_MAX], 
-		 s_l_text[DISCORD_FIELD_MAX], s_s_text[DISCORD_FIELD_MAX];
+		 s_l_text[DISCORD_FIELD_MAX], s_s_text[DISCORD_FIELD_MAX], s_name[DISCORD_FIELD_MAX];
 
 	JsonEscape(s_state, dp_presence->sz_state, sizeof(s_state));
 	JsonEscape(s_details, dp_presence->sz_details, sizeof(s_details));
 	JsonEscape(s_l_text, dp_presence->sz_large_text, sizeof(s_l_text));
 	JsonEscape(s_s_text, dp_presence->sz_small_text, sizeof(s_s_text));
+	JsonEscape(s_name, dp_presence->sz_name, sizeof(s_name));
 
 	char psz_nonce[NONCE_SIZE];
 	GenerateNonce(psz_nonce, sizeof(psz_nonce));
@@ -475,9 +476,10 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 	}
 
 	int offset = snprintf(psz_json, MAX_MESSAGE_SIZE,
-						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{\"type\":%d, \"name\":\"VLC Media Player\",",
+						  "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%" PRIu64 ",\"activity\":{\"type\":%d, \"name\":\"%s\",",
 						  (uint64_t)get_pid(),
-						  (int)dp_presence->i_type);
+						  (int)dp_presence->i_type,
+						  s_name);
 
 	bool b_need_comma = false;
 

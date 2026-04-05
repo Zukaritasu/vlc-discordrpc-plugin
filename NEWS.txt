@@ -1,6 +1,11 @@
 Discord Rich Presence for VLC - Version History
 ===============================================
 
+Version 1.2.0 (2026-04-04)
+--------------------------
+* The static Rich Presence has been replaced with a user-customizable Rich Presence using tokens
+* In addition, several internal bugs were fixed.
+
 Version 1.1.0 (2026-03-06)
 --------------------------
 * Added support for playlist display (disabled by default).

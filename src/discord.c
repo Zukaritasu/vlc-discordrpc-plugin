@@ -20,6 +20,7 @@
 #include "discordipc.h"
 #include "metadata.h"
 #include "pluginimages.h"
+#include "format.h"
 
 #include <vlc_common.h>
 #include <vlc_threads.h>
@@ -79,6 +80,8 @@ typedef struct
 
 } vlc_discord_internal_data_t;
 
+static const char* const PLUGIN_VLC_TITLE = "VLC Media Player";
+
 /**
  * @brief Internal exception handler for Discord IPC events.
  * * Logs internal messages and errors from the Discord IPC layer to the
@@ -95,6 +98,11 @@ static void Discord_Exception(intf_thread_t *p_intf, const char *psz_msg)
 	}
 }
 
+#define discord_call_sleep(ms) \
+	vlc_mutex_lock(&p_sys->lock); \
+	vlc_cond_timedwait(&sleep_cond, &p_sys->lock, mdate() + vlc_tick_from_sec(ms)); \
+	vlc_mutex_unlock(&p_sys->lock);
+
 /**
  * @brief Worker thread function for Discord Rich Presence.
  * * Handles the lifecycle of the Discord IPC connection, including connection attempts,
@@ -106,11 +114,14 @@ static void *Discord_Callbacks(void *p_data)
 {
 	vlc_discord_t *self = (vlc_discord_t *)p_data;
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
+	vlc_cond_t sleep_cond;
 
 	if (!DiscordRPC_CreateIPC(&p_sys->ipc, p_sys->p_intf, Discord_Exception))
 	{
 		return NULL;
 	}
+
+	vlc_cond_init(&sleep_cond);
 
 	while (p_sys->b_run)
 	{
@@ -119,7 +130,7 @@ static void *Discord_Callbacks(void *p_data)
 			// TODO: casting int64_t to uint64_t
 			if (p_sys->ipc.pf_connect(&p_sys->ipc, (uint64_t)p_sys->settings.i_client_id))
 				break;
-			msleep(vlc_tick_from_sec(2));
+			discord_call_sleep(2);
 		}
 
 		if (!p_sys->b_run)
@@ -139,7 +150,7 @@ static void *Discord_Callbacks(void *p_data)
 			if (!p_sys->ipc.pf_is_connected(&p_sys->ipc))
 				break;
 
-			msleep(vlc_tick_from_sec(2));
+			discord_call_sleep(2);
 		}
 
 		if (!p_sys->b_run)
@@ -151,6 +162,8 @@ static void *Discord_Callbacks(void *p_data)
 	p_sys->ipc.pf_destroy(&p_sys->ipc);
 
 	memset(&p_sys->ipc, 0, sizeof(vlc_discord_ipc_t));
+
+	vlc_cond_destroy(&sleep_cond);
 
 	return NULL;
 }
@@ -168,7 +181,7 @@ static bool Impl_InitializePresence(vlc_discord_t *self)
 	}
 
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
-	if (!p_sys->settings.b_enabled)
+	if (!p_sys->settings.b_enable)
 	{
 		/* true must be returned even if the presence is not active
 		becauseif false is returned, it would be considered an initialization error */
@@ -195,7 +208,7 @@ static bool Impl_Update(vlc_discord_t *self)
 
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
 
-	if (!p_sys->settings.b_enabled)
+	if (!p_sys->settings.b_enable)
 	{
 		return true;
 	}
@@ -204,6 +217,9 @@ static bool Impl_Update(vlc_discord_t *self)
 
 	vlc_mutex_lock(&p_sys->lock);
 
+	vlc_dictionary_t dict;
+	DiscordRPC_MetadataToDictionary(&p_sys->metadata, &dict);
+
 	memset(&p_sys->presence, 0, sizeof(discord_presence_t));
 
 	// Default activity type
@@ -211,16 +227,29 @@ static bool Impl_Update(vlc_discord_t *self)
 
 	if (p_sys->metadata.b_is_playing)
 	{
-		if (p_sys->metadata.b_is_paused)
-		{
-			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PLAY);
-			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Paused");
-		}
-		else
-		{
-			snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), PLUGIN_IMAGE_SMALL_PAUSE);
-			snprintf(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), "Playing");
+		DiscordRPC_Format(p_sys->presence.sz_small_text, sizeof(p_sys->presence.sz_small_text), 
+		p_sys->settings.psz_small_text_format, &p_sys->metadata, &dict);
 
+		DiscordRPC_Format(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), 
+		p_sys->settings.psz_large_text_format, &p_sys->metadata, &dict);
+
+		if (p_sys->settings.b_enable_details)
+		{
+			DiscordRPC_Format(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), 
+			p_sys->settings.psz_details_format, &p_sys->metadata, &dict);
+		}
+
+		if (p_sys->settings.b_enable_state)
+		{
+			DiscordRPC_Format(p_sys->presence.sz_state, sizeof(p_sys->presence.sz_state), 
+			p_sys->settings.psz_state_format, &p_sys->metadata, &dict);
+		}
+
+		snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), 
+			p_sys->metadata.b_is_paused ? PLUGIN_IMAGE_SMALL_PLAY : PLUGIN_IMAGE_SMALL_PAUSE);
+		
+		if (!p_sys->metadata.b_is_paused)
+		{
 			p_sys->presence.i_start_time = p_sys->metadata.i_start_time;
 			p_sys->presence.i_end_time = p_sys->metadata.i_end_time;
 		}
@@ -229,56 +258,24 @@ static bool Impl_Update(vlc_discord_t *self)
 				 p_sys->metadata.b_is_audio && !p_sys->metadata.b_is_video ? 
 				 PLUGIN_IMAGE_LARGE_MUSIC : PLUGIN_IMAGE_LARGE_DEFAULT);
 
-		if (p_sys->settings.b_show_playlist && p_sys->metadata.playlist_info.b_has_playlist)
-		{
-			snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "Playlist (%d / %d)",
-					p_sys->metadata.playlist_info.i_curr_pos, 
-					p_sys->metadata.playlist_info.i_total_items);
-		}
-		
-		size_t i_bufsize = sizeof(p_sys->presence.sz_state);
-
-		if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0' &&
-			p_sys->settings.b_show_album && p_sys->metadata.sz_album[0] != '\0')
-		{
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-truncation"
-			snprintf(p_sys->presence.sz_state, i_bufsize, "%s - %s",
-					 p_sys->metadata.sz_artist, p_sys->metadata.sz_album);
-#pragma GCC diagnostic pop
-		}
-		else if (p_sys->settings.b_show_artist && p_sys->metadata.sz_artist[0] != '\0')
-		{
-			snprintf(p_sys->presence.sz_state, i_bufsize, "%s",
-					 p_sys->metadata.sz_artist);
-		}
-		else if (p_sys->settings.b_show_album && p_sys->metadata.sz_album[0] != '\0')
-		{
-			snprintf(p_sys->presence.sz_state, i_bufsize, "%s",
-					 p_sys->metadata.sz_album);
-		}
-
-		if (p_sys->settings.b_show_title)
-		{
-			snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", p_sys->metadata.sz_title);
-		}
-
 		if (p_sys->metadata.b_is_video)
-		{
 			p_sys->presence.i_type = ACTIVITY_TYPE_WATCHING;
-		}
 		else if (p_sys->metadata.b_is_audio)
-		{
 			p_sys->presence.i_type = ACTIVITY_TYPE_LISTENING;
-		}
+
+		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), "%s", p_sys->metadata.sz_artist[0] == '\0' ? 
+			PLUGIN_VLC_TITLE : p_sys->metadata.sz_artist);
 	}
 	else
 	{
 		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
-		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "VLC Media Player");
+		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), PLUGIN_VLC_TITLE);
+		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), PLUGIN_VLC_TITLE);
 
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
 	}
+
+	vlc_dictionary_clear(&dict, NULL, NULL);
 
 	vlc_mutex_unlock(&p_sys->lock);
 
@@ -330,7 +327,7 @@ static bool Impl_SetEnabled(vlc_discord_t *self, bool b_enable)
 		return false;
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
 
-	p_sys->settings.b_enabled = b_enable;
+	p_sys->settings.b_enable = b_enable;
 
 	if (b_enable)
 	{
