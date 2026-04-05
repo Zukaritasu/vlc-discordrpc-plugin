@@ -68,13 +68,13 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 #### Debian/Ubuntu
 
 ```bash
-sudo dpkg -i vlc-discordrpc-plugin_1.1.0_amd64.deb
+sudo dpkg -i vlc-discordrpc-plugin_1.2.0_amd64.deb
 ```
 
 #### Fedora
 
 ```bash
-sudo dnf install vlc-discordrpc-plugin-1.1.0-1.fc41.x86_64.rpm
+sudo dnf install vlc-discordrpc-plugin-1.2.0-1.fc41.x86_64.rpm
 ```
 
 ---
