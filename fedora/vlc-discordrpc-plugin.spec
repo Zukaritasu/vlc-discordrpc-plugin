@@ -22,47 +22,57 @@ showing playback status, title, and progress directly in Discord.
 
 %pre
 if pgrep -x "vlc" > /dev/null; then
-    echo "   error: VLC is running. Please close it before installing the Discord RPC plugin.\033[0m"
+    echo "   error: VLC is running. Please close it before installing the plugin."
     exit 1
 fi
 
 %post
 echo "Configuring vlc-discordrpc-plugin..."
-
+		
 if command -v vlc >/dev/null 2>&1; then
 	vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
 	echo "   [+] VLC plugins cache updated successfully."
 else
-	echo "   [!] warning: VLC binary not found. Please ensure VLC is installed to use this plugin."
+	echo "   [!] warning: VLC binary not found. The VLC plugins cache could not be updated."
+	exit 1
 fi
 
 if [ -x /usr/bin/vlcrcedit ]; then
-	/usr/bin/vlcrcedit --install >/dev/null 2>&1 || true
-	echo "   [+] VLC vlcrc file edit updated successfully."
+	/usr/bin/vlcrcedit --install
+	if [ $? -eq 0 ]; then
+		echo "   [+] Plugin configuration installed successfully."
+	else
+		exit 1
+	fi
 else
-	echo "   [!] warning: vlcrcedit not found. Please ensure vlcrcedit is installed to update VLC vlcrc file."
+	echo "   [!] error: vlcrcedit could not be found during installation"
+	exit 1
 fi
 
 %preun
 if pgrep -x "vlc" > /dev/null; then
-    echo "   error: VLC is running. Please close it before removing the Discord RPC plugin."
+    echo "   error: VLC is running. Please close it before removing the plugin."
     exit 1
 fi
 
 echo "Removing vlc-discordrpc-plugin..."
 
 if [ -x /usr/bin/vlcrcedit ]; then
-	/usr/bin/vlcrcedit --uninstall >/dev/null 2>&1 || true
-	echo "   [-] VLC vlcrc file edit updated successfully."
+	/usr/bin/vlcrcedit --uninstall
+	if [ $? -eq 0 ]; then
+		echo "   [-] Plugin configuration successfully removed."
+	else
+		echo "   [!] warning: Failed to remove plugin configuration. Please remove the plugin configuration manually from vlcrc file."
+	fi
 else
-	echo "   [!] warning: vlcrcedit not found. Please ensure vlcrcedit is installed to update VLC vlcrc file."
+	echo "   [!] warning: vlcrcedit not found. Please remove the plugin configuration manually from vlcrc file."
 fi
 	
 if command -v vlc >/dev/null 2>&1; then
 	vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
-	echo "   [-] VLC plugins cache cleaned."
+	echo "   [-] VLC plugins cache updated successfully."
 else
-	echo "   [!] warning: VLC binary not found. The VLC plugins cache may not be updated."
+	echo "   [!] warning: VLC binary not found. The VLC plugins cache could not be updated."
 fi
 
 %prep

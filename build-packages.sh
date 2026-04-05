@@ -15,4 +15,3 @@ docker build -t "${NAME}-ubuntu" -f Dockerfile.ubuntu --build-arg VERSION="${CUR
 
 echo "--------------------------------------------------------"
 echo "Process completed. Binaries are in ${RELEASES_DIR}"
-ls -R "${RELEASES_DIR}"

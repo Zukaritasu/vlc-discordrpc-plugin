@@ -4,24 +4,28 @@ set -e
 case "$1" in
 	remove|deconfigure)
 		if pgrep -x "vlc" > /dev/null; then
-			echo "   \033[0;31merror: VLC is running. Please close it before removing the Discord RPC plugin.\033[0m"
+			echo "   \033[0;31merror: VLC is running. Please close it before removing the plugin.\033[0m"
 			exit 1
 		fi
 	
 		echo "Removing vlc-discordrpc-plugin..."
 
 		if [ -x /usr/bin/vlcrcedit ]; then
-			/usr/bin/vlcrcedit --uninstall >/dev/null 2>&1 || true
-			echo "   \033[0;32m[-]\033[0m VLC vlcrc file edit updated successfully."
+			/usr/bin/vlcrcedit --uninstall
+			if [ $? -eq 0 ]; then
+				echo "   \033[0;32m[-]\033[0m Plugin configuration successfully removed."
+			else
+				echo "   \033[0;33m[!]\033[0m warning: Failed to remove plugin configuration. Please remove the plugin configuration manually from vlcrc file."
+			fi
 		else
-			echo "   \033[0;33m[!]\033[0m warning: vlcrcedit not found. Please ensure vlcrcedit is installed to update VLC vlcrc file."
+			echo "   \033[0;33m[!]\033[0m warning: vlcrcedit not found. Please remove the plugin configuration manually from vlcrc file."
 		fi
 	
 		if command -v vlc >/dev/null 2>&1; then
 			vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
-			echo "   \033[0;32m[-]\033[0m VLC plugins cache cleaned."
+			echo "   \033[0;32m[-]\033[0m VLC plugins cache updated successfully."
 		else
-			echo "   \033[0;33m[!]\033[0m warning: VLC binary not found. The VLC plugins cache may not be updated."
+			echo "   \033[0;33m[!]\033[0m warning: VLC binary not found. The VLC plugins cache could not be updated."
 		fi
 	;;
 
