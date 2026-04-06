@@ -82,4 +82,11 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
  */
 void DiscordRPC_MetadataToDictionary(vlc_discord_metadata_t *p_md, vlc_dictionary_t *p_dict);
 
+/**
+ * @brief Clears the metadata dictionary.
+ * * This function is intended to free the memory allocated for the metadata dictionary entries.
+ * * @param p_dict  Pointer to the dictionary structure to be cleared.
+ */
+void DiscordRPC_MetadataDictionaryClear(vlc_dictionary_t *p_dict);
+
 #endif // METADATA_H

@@ -275,7 +275,7 @@ static bool Impl_Update(vlc_discord_t *self)
 		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
 	}
 
-	vlc_dictionary_clear(&dict, NULL, NULL);
+	DiscordRPC_MetadataDictionaryClear(&dict);
 
 	vlc_mutex_unlock(&p_sys->lock);
 
