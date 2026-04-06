@@ -52,13 +52,21 @@ vlc_module_begin()
     
     set_section("Discord config", NULL)
 
+    set_help("The app ID can be created on the Discord Developer Portal website; by default, the plugin uses its own ID. If you enter an invalid ID, Rich Presence will stop working")
     add_string(ID_RPC_CLIENT_ID, DEFAULT_CLIENT_ID, "Application ID", "Enter the application ID obtained from the Discord Developer Portal.", false)
   
     set_section("Formats", NULL)
 
+    set_help("Discord only supports 127 characters per field in the rich presence, so if a title, artist, album, etc., is too long, the resulting text will be truncated with ellipses. You can use the following format strings to customize the information displayed in your Discord profile while using VLC. The available variables are:\n\n"
+                    "${title} - The title of the currently playing media\n"
+                    "${artist} - The artist of the currently playing media (if available)\n"
+                    "${album} - The album of the currently playing media (if available)\n"
+                    "${status} - The current playback status (e.g., Playing, Paused)\n"
+                    "${pls_pos} - Track position in playlist\n"
+                    "${pls_total} - Total tracks in playlist")
     add_string(ID_RPC_DETAILS_FORMAT, "${title}", "Details", "Format string for the details field.", false)
     add_string(ID_RPC_STATE_FORMAT, "${artist} - ${album}", "State", "Format string for the state field.", false)
-    add_string(ID_RPC_LARGE_TEXT_FORMAT, "", "Large text", "Format string for the large text.", false)
+    add_string(ID_RPC_LARGE_TEXT_FORMAT, "Playlist (${pls_pos}/${pls_total})", "Large text", "Format string for the large text.", false)
     add_string(ID_RPC_SMALL_TEXT_FORMAT, "${status}", "Small text", "Format string for the small text.", false)
 
     set_section("Options", NULL)
