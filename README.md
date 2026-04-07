@@ -25,7 +25,7 @@ This is a plugin specifically developed to display the user's activity in VLC on
 - **Time remaining**: Displays the  current progress time.
 - **Enable or disable rich presence**: In the plugin settings (requires restarting VLC)
 - **Enable or disable details or state**: In the plugin settings (requires restarting VLC)
-- **Customization of details and status**: In the plugin settings (requires restarting VLC)
+- **Customization of details, status, large text and small text**: In the plugin settings (requires restarting VLC)
 - **Show artist or album**: 
 - **Custom Discord Application ID**: In the plugin settings (requires restarting VLC)
 
