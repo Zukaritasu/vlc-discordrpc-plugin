@@ -28,6 +28,7 @@
 
 #include "discord.h"
 #include "settings.h"
+#include "metadata.h"
 
 /**
  * @brief Internal state for the Discord RPC interface.
@@ -58,16 +59,16 @@ vlc_module_begin()
     set_section("Formats", NULL)
 
     set_help("Discord only supports 127 characters per field in the rich presence, so if a title, artist, album, etc., is too long, the resulting text will be truncated with ellipses. You can use the following format strings to customize the information displayed in your Discord profile while using VLC. The available variables are:\n\n"
-                    "${title} - The title of the currently playing media\n"
-                    "${artist} - The artist of the currently playing media (if available)\n"
-                    "${album} - The album of the currently playing media (if available)\n"
-                    "${status} - The current playback status (e.g., Playing, Paused)\n"
-                    "${pls_pos} - Track position in playlist\n"
-                    "${pls_total} - Total tracks in playlist")
-    add_string(ID_RPC_DETAILS_FORMAT, "${title}", "Details", "Format string for the details field.", false)
-    add_string(ID_RPC_STATE_FORMAT, "${artist} - ${album}", "State", "Format string for the state field.", false)
-    add_string(ID_RPC_LARGE_TEXT_FORMAT, "Playlist (${pls_pos}/${pls_total})", "Large text", "Format string for the large text.", false)
-    add_string(ID_RPC_SMALL_TEXT_FORMAT, "${status}", "Small text", "Format string for the small text.", false)
+                    "${" PMDATA_TOKEN_TITLE "} - The title of the currently playing media\n"
+                    "${" PMDATA_TOKEN_ARTIST "} - The artist of the currently playing media (if available)\n"
+                    "${" PMDATA_TOKEN_ALBUM "} - The album of the currently playing media (if available)\n"
+                    "${" PMDATA_TOKEN_STATUS "} - The current playback status (e.g., Playing, Paused)\n"
+                    "${" PMDATA_TOKEN_PLAYLIST_POSITION "} - Track position in playlist\n"
+                    "${" PMDATA_TOKEN_PLAYLIST_TOTAL "} - Total tracks in playlist")
+    add_string(ID_RPC_DETAILS_FORMAT, "${" PMDATA_TOKEN_TITLE "}", "Details", "Format string for the details field.", false)
+    add_string(ID_RPC_STATE_FORMAT, "${" PMDATA_TOKEN_ARTIST "} - ${" PMDATA_TOKEN_ALBUM "}", "State", "Format string for the state field.", false)
+    add_string(ID_RPC_LARGE_TEXT_FORMAT, "Playlist (${" PMDATA_TOKEN_PLAYLIST_POSITION "}/${" PMDATA_TOKEN_PLAYLIST_TOTAL "})", "Large text", "Format string for the large text.", false)
+    add_string(ID_RPC_SMALL_TEXT_FORMAT, "${" PMDATA_TOKEN_STATUS "}", "Small text", "Format string for the small text.", false)
 
     set_section("Options", NULL)
 

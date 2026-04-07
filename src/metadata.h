@@ -27,6 +27,17 @@
 #include <vlc_interface.h>
 #include <vlc_arrays.h>
 
+// Plugin metadata tokens
+
+#define PMDATA_TOKEN_TITLE             "title"
+#define PMDATA_TOKEN_ARTIST            "artist"
+#define PMDATA_TOKEN_ALBUM             "album"
+#define PMDATA_TOKEN_STATUS            "status"
+#define PMDATA_TOKEN_PLAYLIST_POSITION "pls_pos"
+#define PMDATA_TOKEN_PLAYLIST_TOTAL    "pls_total"
+
+// end of plugin metadata tokens
+
 /**
  * @struct playlist_info_t
  * @brief Playlist info

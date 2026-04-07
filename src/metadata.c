@@ -26,6 +26,14 @@
 #include <vlc_playlist.h>
 #include <time.h>
 
+static char* IntegerToString(int i, int i_min_value)
+{
+	char *psz_str = malloc(12);
+	if (psz_str)
+		snprintf(psz_str, 12, "%d", i < i_min_value ? i_min_value : i);
+	return psz_str;
+}
+
 static playlist_info_t GetPlaylistInfo(intf_thread_t *p_intf)
 {
     playlist_info_t info;
@@ -128,27 +136,20 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 
 void DiscordRPC_MetadataToDictionary(vlc_discord_metadata_t *p_md, vlc_dictionary_t *p_dict)
 {
-	char sz_number[12];
-
 	vlc_dictionary_init(p_dict, 0);
 	
-	vlc_dictionary_insert(p_dict, "title", p_md->sz_title);
-
-	vlc_dictionary_insert(p_dict, "artist", p_md->sz_artist);
-	vlc_dictionary_insert(p_dict, "album", p_md->sz_album);
-	vlc_dictionary_insert(p_dict, "status", p_md->b_is_playing ? (p_md->b_is_paused ? "Paused" : "Playing") : "Stopped");
-
-	snprintf(sz_number, sizeof(sz_number), "%d", p_md->playlist_info.i_curr_pos == 0 ? 1 : p_md->playlist_info.i_curr_pos);
-	vlc_dictionary_insert(p_dict, "pls_pos", strdup(sz_number));
-
-	snprintf(sz_number, sizeof(sz_number), "%d", p_md->playlist_info.i_total_items == 0 ? 1 : p_md->playlist_info.i_total_items);
-	vlc_dictionary_insert(p_dict, "pls_total", strdup(sz_number));
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_TITLE, p_md->sz_title);
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_ARTIST, p_md->sz_artist);
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_ALBUM, p_md->sz_album);
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_STATUS, p_md->b_is_playing ? (p_md->b_is_paused ? "Paused" : "Playing") : "Stopped");
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_PLAYLIST_POSITION, IntegerToString(p_md->playlist_info.i_curr_pos, 1));
+	vlc_dictionary_insert(p_dict, PMDATA_TOKEN_PLAYLIST_TOTAL, IntegerToString(p_md->playlist_info.i_total_items, 1));
 }
 
 void DiscordRPC_MetadataDictionaryClear(vlc_dictionary_t *p_dict)
 {
-	free(vlc_dictionary_value_for_key(p_dict, "pls_pos"));
-	free(vlc_dictionary_value_for_key(p_dict, "pls_total"));
+	free(vlc_dictionary_value_for_key(p_dict, PMDATA_TOKEN_PLAYLIST_POSITION));
+	free(vlc_dictionary_value_for_key(p_dict, PMDATA_TOKEN_PLAYLIST_TOTAL));
 	
 	vlc_dictionary_clear(p_dict, NULL, NULL);
 }
