@@ -142,7 +142,8 @@ static void *Discord_Callbacks(void *p_data)
 		while (p_sys->b_run)
 		{
 			vlc_mutex_lock(&p_sys->lock);
-			p_sys->ipc.pf_set_presence(&p_sys->ipc, p_sys->presence);
+			if (p_sys->presence.sz_name[0] != '\0')
+				p_sys->ipc.pf_set_presence(&p_sys->ipc, p_sys->presence);
 			vlc_mutex_unlock(&p_sys->lock);
 
 			if (!p_sys->b_run)
