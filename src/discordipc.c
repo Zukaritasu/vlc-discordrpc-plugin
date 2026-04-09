@@ -38,6 +38,7 @@ typedef HANDLE pipe_t;
 #elif defined(__linux__) || defined(__APPLE__)
 
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <poll.h>
 #include <unistd.h>
@@ -57,9 +58,15 @@ typedef int pipe_t;
 #define MAX_MESSAGE_SIZE      2048
 #define NONCE_SIZE            16
 
-#define FREE_XDG_TMPDIR(p_xdg, p_tmp) \
-	if (p_xdg && p_xdg != p_tmp) free(p_xdg); \
-	if (p_tmp) free(p_tmp);
+/**
+ * Discord Opcodes
+ */
+ enum DiscordOpcode
+ {
+	OP_HANDSHAKE = 0,
+	OP_FRAME = 1,
+	OP_CLOSE = 2
+ };
 
 /**
  * @struct vlc_discord_ipc_data_t
@@ -75,6 +82,7 @@ typedef struct
 } vlc_discord_ipc_data_t;
 
 /**
+ * @struct vlc_discord_ipc_header_t
  * @brief Discord IPC packet header.
  * * This structure matches the binary format required by Discord's IPC 
  * handshake and frame transmission.
@@ -84,6 +92,112 @@ typedef struct
     uint32_t i_opcode; /**< Operation code (0=Handshake, 1=Frame, 2=Close) */
     uint32_t i_length; /**< Length of the following JSON payload */
 } vlc_discord_ipc_header_t;
+
+#if defined(__linux__) || defined(__APPLE__)
+
+/**
+ * @struct unix_tempdir_array_t
+ * @brief Helper structure to store potential temporary directories for socket
+ * discovery on Unix-like systems.
+ */
+typedef struct
+{
+	int i_count;
+	char **psz_dirs;
+} unix_tempdir_array_t;
+
+/**
+ * @brief Frees the memory allocated for the temporary directories array.
+ */
+static void FreeTempDirs(unix_tempdir_array_t *p_array)
+{
+	for (int i = 0; i < p_array->i_count; i++)
+		free(p_array->psz_dirs[i]);
+	free(p_array->psz_dirs);
+
+	p_array->psz_dirs = NULL;
+	p_array->i_count = 0;
+}
+
+/**
+ * @brief Populates an array with valid temporary directories from environment
+ * variables. This is used to search for Discord's Unix domain socket on Linux
+ * and macOS, where it may be located in various temp directories.
+ */
+static void GetAllTempDirs(unix_tempdir_array_t *p_array)
+{
+	p_array->i_count = 0;
+	p_array->psz_dirs = NULL;
+
+	const char *env_tempdirs[] = 
+	{ 
+		"XDG_RUNTIME_DIR",
+		"TMPDIR",
+		"TMP",
+		"TEMP"
+	};
+
+	size_t i_num_tempdirs = sizeof(env_tempdirs) / sizeof(env_tempdirs[0]);
+
+	for (size_t i = 0; i < i_num_tempdirs; i++)
+	{
+		const char *psz_dir = getenv(env_tempdirs[i]);
+		if (psz_dir)
+		{
+			struct stat st;
+			if (stat(psz_dir, &st) != 0 || !S_ISDIR(st.st_mode) || access(psz_dir, R_OK | W_OK | X_OK) != 0)
+				continue; /* Skip invalid or inaccessible directories */
+
+			bool b_already_added = false;
+			for (int j = 0; j < p_array->i_count; j++)
+			{
+				if (strcmp(p_array->psz_dirs[j], psz_dir) == 0)
+				{
+					b_already_added = true;
+					break;
+				}
+			}
+
+			if (b_already_added) continue;
+			
+			void* p_temp = realloc(p_array->psz_dirs, sizeof(char*) * (p_array->i_count + 1));
+			if (!p_temp)
+			{
+				FreeTempDirs(p_array);
+				return;
+			}
+
+			p_array->psz_dirs = (char **)p_temp;
+			p_array->psz_dirs[p_array->i_count] = strdup(psz_dir);
+			if (!p_array->psz_dirs[p_array->i_count])
+			{
+				FreeTempDirs(p_array);
+				return;
+			}
+
+			p_array->i_count++;
+		}
+	}
+
+	if (p_array->i_count == 0)
+	{
+		p_array->psz_dirs = malloc(sizeof(char*));
+		if (!p_array->psz_dirs)
+			return;
+
+		p_array->psz_dirs[0] = strdup("/tmp");
+		if (!p_array->psz_dirs[0])
+		{
+			free(p_array->psz_dirs);
+			p_array->psz_dirs = NULL;
+			return;
+		}
+
+		p_array->i_count = 1;
+	}
+}
+
+#endif // defined(__linux__) || defined(__APPLE__)
 
 /**
  * @brief Generates a pseudo-random nonce for Discord JSON requests.
@@ -286,7 +400,7 @@ cleanup:
 /**
  * @brief Sends a synchronous message to Discord and validates the response.
  */
-static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opcode, const char *psz_handshake, bool *bp_errpipe)
+static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, enum DiscordOpcode do_opcode, const char *psz_handshake, bool *bp_errpipe)
 {
 	if (p_sys->handle == INVALID_PIPE)
 	{
@@ -303,14 +417,19 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opc
 		return false;
 	}
 
-	vlc_discord_ipc_header_t header = {.i_opcode = i_opcode, .i_length = (int32_t)json_len};
+	vlc_discord_ipc_header_t header = {.i_opcode = do_opcode, .i_length = (int32_t)json_len};
 	if (!WriteAll(p_sys, &header, sizeof(header), bp_errpipe))
 	{
+		if (do_opcode == OP_CLOSE)
+			return true; /* Close command may fail if pipe is already broken, don't report redundant error */
 		if (p_sys->pf_err)
 			p_sys->pf_err(p_sys->p_intf, "Failed to write header to Discord pipe.");
 		return false;
 	}
 
+	if (do_opcode == OP_CLOSE)
+		return true; /* Close command has no body, skip waiting for response */
+	
 	if (!WriteAll(p_sys, psz_handshake, json_len, bp_errpipe))
 	{
 		if (p_sys->pf_err)
@@ -353,7 +472,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, uint32_t i_opc
 		bool b_success = (strstr(response, "\"evt\":\"READY\"") ||
 						strstr(response, "\"cmd\":\"SET_ACTIVITY\"") ||
 						strstr(response, "\"code\":0"));
-
+		
 		if (!b_success)
 		{
 			char *sz_msg_pos = strstr(response, "\"message\":\"");
@@ -399,17 +518,7 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 		return true;
 	}
 
-	char psz_nonce[NONCE_SIZE];
-	char psz_clear_activity[MAX_MESSAGE_SIZE];
-
-	GenerateNonce(psz_nonce, sizeof(psz_nonce));
-
-	snprintf(psz_clear_activity, sizeof(psz_clear_activity),
-			 "{\"cmd\":\"SET_ACTIVITY\",\"args\":{\"pid\":%lu,\"activity\":null},\"nonce\":\"%s\"}",
-			 (unsigned long)get_pid(),
-			 psz_nonce);
-
-	SendDiscordMessageSync(p_sys, 1, psz_clear_activity, NULL);
+	SendDiscordMessageSync(p_sys, OP_CLOSE, "{}", NULL);
 
 #if defined(_WIN32)
 	CloseHandle(p_sys->handle);
@@ -533,7 +642,7 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 	snprintf(psz_json + offset, MAX_MESSAGE_SIZE - offset, "}},\"nonce\":\"%s\"}", psz_nonce);
 
 	bool b_errpipe = false;
-	bool b_result = SendDiscordMessageSync(p_sys, 1, psz_json, &b_errpipe);
+	bool b_result = SendDiscordMessageSync(p_sys, OP_FRAME, psz_json, &b_errpipe);
 
 	if (b_errpipe)
 	{
@@ -578,7 +687,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 									  OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
 			if (p_sys->handle != INVALID_PIPE)
 			{
-				if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL))
+				if (SendDiscordMessageSync(p_sys, OP_HANDSHAKE, psz_handshake, NULL))
 				{
 					p_sys->b_connected = true;
 					vlc_mutex_unlock(&p_sys->lock);
@@ -591,29 +700,19 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	}
 	
 #elif defined(__linux__) || defined(__APPLE__)
-	char *psz_xdg = getenv("XDG_RUNTIME_DIR");
-	if (psz_xdg) psz_xdg = strdup(psz_xdg);
+	unix_tempdir_array_t temp_dirs;
+	GetAllTempDirs(&temp_dirs);
 
-	char *psz_tmp = getenv("TMPDIR");
-	if (psz_tmp) psz_tmp = strdup(psz_tmp);
-
-	if (!psz_xdg)
+	if (temp_dirs.i_count == 0)
 	{
-		psz_xdg = psz_tmp;
-		if (!psz_xdg)
-		{
-			psz_xdg = strdup("/tmp");
-			if (!psz_xdg)
-			{
-				vlc_mutex_unlock(&p_sys->lock);
-				return false;
-			}
-		}
+		if (p_sys->pf_err)
+			p_sys->pf_err(p_sys->p_intf, "Out of memory while retrieving temporary directories");
+		vlc_mutex_unlock(&p_sys->lock);
+		return false;
 	}
-
+	
 	const char *sub_paths[] = 
 	{
-
         "%s/discord-ipc-%d",
 #ifdef __linux__
         "%s/snap.discord/discord-ipc-%d",				/* Snap */
@@ -621,44 +720,43 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 #endif
     };
 
-    int num_paths = sizeof(sub_paths) / sizeof(sub_paths[0]);
+	int num_paths = sizeof(sub_paths) / sizeof(sub_paths[0]);
 
-    for (int i = 0; i < MAX_PIPE_ATTEMPTS; i++) 
+	struct sockaddr_un addr;
+	memset(&addr, 0, sizeof(addr));
+	addr.sun_family = AF_UNIX;
+
+	for (int i = 0; i < MAX_PIPE_ATTEMPTS; i++)
 	{
-        for (int p = 0; p < num_paths; p++) 
+		for (int p = 0; p < num_paths; p++)
 		{
-            char socket_path[SOCKET_PATH_MAX];
-            snprintf(socket_path, sizeof(socket_path), sub_paths[p], psz_xdg, i);
-
-            p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
-            if (p_sys->handle == INVALID_PIPE)
+			for (int d = 0; d < temp_dirs.i_count; d++)
 			{
-				FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
-				vlc_mutex_unlock(&p_sys->lock);
-				return false;
-			}
-
-            struct sockaddr_un addr;
-            memset(&addr, 0, sizeof(addr));
-            addr.sun_family = AF_UNIX;
-            snprintf(addr.sun_path, sizeof(addr.sun_path), "%s", socket_path);
-
-            if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0) 
-			{
-                if (SendDiscordMessageSync(p_sys, 0, psz_handshake, NULL)) 
+				p_sys->handle = socket(AF_UNIX, SOCK_STREAM, 0);
+				if (p_sys->handle == INVALID_PIPE)
 				{
-                    p_sys->b_connected = true;
-					FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
+					FreeTempDirs(&temp_dirs);
 					vlc_mutex_unlock(&p_sys->lock);
-                    return true;
-                }
-            }
-            close(p_sys->handle);
-			p_sys->handle = INVALID_PIPE;
-        }
-    }
+					return false;
+				}
 
-	FREE_XDG_TMPDIR(psz_xdg, psz_tmp);
+				snprintf(addr.sun_path, sizeof(addr.sun_path), sub_paths[p], temp_dirs.psz_dirs[d], i);
+				if (connect(p_sys->handle, (struct sockaddr *)&addr, sizeof(addr)) == 0 &&
+					SendDiscordMessageSync(p_sys, OP_HANDSHAKE, psz_handshake, NULL))
+				{
+					p_sys->b_connected = true;
+					FreeTempDirs(&temp_dirs);
+					vlc_mutex_unlock(&p_sys->lock);
+					return true;
+				}
+
+				close(p_sys->handle);
+				p_sys->handle = INVALID_PIPE;
+			}
+		}
+	}
+
+	FreeTempDirs(&temp_dirs);
 	
 #else
 	#error “Platform not supported for this plugin”
