@@ -42,7 +42,7 @@ if [ -x /usr/bin/vlcrcedit ]; then
 	if [ $? -eq 0 ]; then
 		echo "   [+] Plugin configuration installed successfully."
 	else
-		exit 1
+		echo "   [!] warning: You must manually activate the plugin in VLC"
 	fi
 else
 	echo "   [!] error: vlcrcedit could not be found during installation"
@@ -50,6 +50,11 @@ else
 fi
 
 %preun
+
+if [ $1 -eq 1 ]; then
+    exit 0
+fi
+
 if pgrep -x "vlc" > /dev/null; then
     echo "   error: VLC is running. Please close it before removing the plugin."
     exit 1
@@ -67,7 +72,7 @@ if [ -x /usr/bin/vlcrcedit ]; then
 else
 	echo "   [!] warning: vlcrcedit not found. Please remove the plugin configuration manually from vlcrc file."
 fi
-	
+
 if command -v vlc >/dev/null 2>&1; then
 	vlc -I dummy --no-interact --reset-plugins-cache vlc://quit >/dev/null 2>&1 || true
 	echo "   [-] VLC plugins cache updated successfully."
