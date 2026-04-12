@@ -113,4 +113,4 @@ Currently, on Windows, Discord requires a 64-bit operating system to function pr
 | **macOS** | macOS 11 Big Sur+ | ✅ VLC supported | ✅ Discord supported | Support for Catalina and earlier ended in 2025; only web version works on older macOS |
 
 > [!IMPORTANT]  
-> Discord no working in your browser, only in the desktop application.
+> Rich presence no working in your browser, only in the desktop application.
