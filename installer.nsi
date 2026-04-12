@@ -9,7 +9,7 @@
 !define MUI_UNICON ".images\vlc_icon.ico"
 
 Name "Discord Rich Presence for VLC"
-OutFile "releases\windows\${VERSION}\vlc-discordrpc-setup_${VERSION}_win_x64.exe"
+OutFile "releases\windows\${VERSION}\vlc-discordrpc-plugin_setup_${VERSION}_win_x64.exe"
 InstallDir "$PROGRAMFILES64\vlc-discordrpc-plugin"
 RequestExecutionLevel admin
 
