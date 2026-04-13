@@ -7,7 +7,7 @@ Standards-Version: 4.7.3
 Homepage: https://github.com/Zukaritasu/vlc-discordrpc-plugin
 
 Package: vlc-discordrpc-plugin
-Architecture: amd64
+Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, vlc
 Description: Discord Rich Presence plugin for VLC
  This plugin integrates VLC Media Player with Discord Rich Presence,

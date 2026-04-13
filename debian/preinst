@@ -4,9 +4,17 @@ set -e
 case "$1" in
 	install|upgrade)
 		if pgrep -x "vlc" > /dev/null; then
-			echo "   \033[0;31merror: VLC is running. Please close it before installing the plugin.\033[0m"
-			exit 1
+			echo "warning: VLC is running. You may need to restart VLC after installing the plugin." >&2
 		fi
+	;;
+
+	abort-upgrade|abort-remove|abort-deconfigure)
+		exit 0
+	;;
+
+	*)
+		echo "preinst called with unknown argument '$1'" >&2
+		exit 1
 	;;
 esac
 
