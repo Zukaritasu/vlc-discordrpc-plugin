@@ -1,11 +1,11 @@
 Name:           vlc-discordrpc-plugin
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Discord Rich Presence plugin for VLC
 
 License:        GPL-2.0-or-later
-URL:            https://github.com/Zukaritasu/vlc-discordrpc-plugin
-Source0:        %{name}-%{version}.tar.gz
+URL:            https://github.com/Zukaritasu/%{name}
+Source0:        https://github.com/Zukaritasu/%{name}/archive/refs/tags/%{version}.tar.gz
 
 BuildRequires:  gcc-c++
 BuildRequires:  vlc-devel
@@ -41,9 +41,6 @@ install -D -m 0755 nsis/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
 %{_libdir}/vlc/plugins/misc/libdiscordrpc_plugin.so
 
 %changelog
- * Sun Apr 13 2026 Zukaritasu <zukaritasu@gmail.com> - 1.2.0-2
- - Fixed packaging issues.
-
  * Sat Apr 04 2026 Zukaritasu <zukaritasu@gmail.com> - 1.2.0
  - The static Rich Presence has been replaced with a user-customizable Rich Presence using tokens
  - In addition, several internal bugs were fixed.
