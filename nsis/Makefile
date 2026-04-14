@@ -1,12 +1,13 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -Wpedantic -DNDEBUG
-LDFLAGS  = -s -static -static-libgcc -static-libstdc++
 VERSION   = 1.2.0
 
 ifeq ($(OS),Windows_NT)
 	EXT_EXECUTABLE = .exe
-	LDFLAGS += -lole32 -luuid
+	LDFLAGS = -s -static -static-libgcc -static-libstdc++ -lole32 -luuid
 else
+	LDFLAGS  += -Wl,-z,relro -Wl,-z,now
+	CXXFLAGS += -g
 	EXT_EXECUTABLE =
 endif
 

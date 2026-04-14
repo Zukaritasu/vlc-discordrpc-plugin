@@ -323,7 +323,7 @@ int main(int argc, char const *argv[])
 {
     if (argc <= 1)
     {
-        std::cerr << "Number of invalid arguments" << std::endl;
+        std::cerr << "Usage: vlcrcedit [--install | --uninstall]" << std::endl;
         return 1;
     }
 
@@ -349,11 +349,22 @@ int main(int argc, char const *argv[])
 		env = std::string(xdg_config) + "/vlc/vlcrc";
 	else
 	{
-		const char* s_user = getenv("SUDO_USER");
-		if (s_user)
-			env = "/home/" + std::string(s_user) + "/.config/vlc/vlcrc";
+		if (getenv("SUDO_USER"))
+		{
+            std::cerr << "Error: you are running as root. Please run as a regular user." << std::endl;
+            return 1;
+        }
 		else
-			env = std::string(getenv("HOME")) + "/.config/vlc/vlcrc";
+		{
+            const char* home = getenv("HOME");
+            if (!home) 
+            {
+                std::cerr << "Error: HOME environment variable not set." << std::endl;
+                return 1;
+            }
+
+            env = std::string(home) + "/.config/vlc/vlcrc";
+        }
 	}
 #else
 	#error "Platform not supported"

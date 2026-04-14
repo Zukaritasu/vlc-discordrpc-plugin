@@ -8,16 +8,13 @@ build: force
 
 override_dh_auto_build:
 	dh_auto_build
-	make -C nsis
+	$(MAKE) -C nsis LDFLAGS="$(shell dpkg-buildflags --get LDFLAGS)"
 
 override_dh_install:
 	dh_install
-	install -D nsis/vlcrcedit debian/vlc-discordrpc-plugin/usr/bin/vlcrcedit
+	install -d debian/vlc-discordrpc-plugin/usr/bin
+	install -m 755 nsis/vlcrcedit debian/vlc-discordrpc-plugin/usr/bin/vlcrcedit
 
-override_dh_clean:
-	dh_clean
-	make -C nsis clean
-
-override_dh_dwz:
-	true
-
+override_dh_auto_clean:
+	dh_auto_clean
+	$(MAKE) -C nsis clean

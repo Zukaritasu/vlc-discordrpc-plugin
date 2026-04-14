@@ -1,6 +1,1 @@
-#!/bin/sh
-cat <<EOF
 README.md
-INSTALL.md
-debian/README.Debian
-EOF
