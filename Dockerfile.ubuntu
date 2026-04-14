@@ -2,14 +2,25 @@ FROM ubuntu:24.04 AS build-ubuntu
 ARG NAME=vlc-discordrpc-plugin
 ARG VERSION
 
-RUN apt-get update && apt-get install -y dos2unix \
-    build-essential cmake pkg-config libvlccore-dev devscripts debhelper vlc && \
+RUN apt-get update && apt-get install -y \
+    dos2unix \
+    build-essential \
+    cmake \
+    pkg-config \
+    libvlccore-dev \
+    devscripts \
+    debhelper \
+    vlc && \
     apt-get clean
 
 WORKDIR /app
 COPY . .
 
 RUN find debian/ -type f -exec dos2unix {} +
+
+RUN chmod -x debian/*
+
+RUN chmod +x debian/rules
 
 RUN mkdir -p build && cd build && cmake .. && make
 RUN dpkg-buildpackage -us -uc -b
