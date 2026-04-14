@@ -12,7 +12,9 @@ RUN mkdir -p build && cd build && cmake .. && make
 RUN rpmdev-setuptree && \
     mkdir -p ${NAME} && \
     cp -r src/ CMakeLists.txt LICENSE README.md INSTALL.md nsis ${NAME}/ && \
+    find ${NAME} -type f -exec chmod 644 {} + && \
     tar -czvf $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz ${NAME} && \
+    cp fedora/vlcrcedit.1 $(rpm --eval '%{_sourcedir}')/ && \
     rpmbuild -ba fedora/vlc-discordrpc-plugin.spec
 
 RUN mkdir -p /outputs/fedora/${VERSION} && \

@@ -1,0 +1,51 @@
+.TH VLCRCEDIT 1 "April 2026" "vlc-discordrpc-plugin" "User Commands"
+.SH NAME
+vlcrcedit - manage VLC Discord Rich Presence plugin loading
+.SH SYNOPSIS
+.B vlcrcedit
+.RI [ --install | --uninstall ]
+.SH DESCRIPTION
+\fBvlcrcedit\fR is a small helper utility included with the vlc-discordrpc-plugin package.
+It updates the user's VLC configuration file (vlcrc) to add or remove the plugin namespace used by the Discord Rich Presence plugin.
+.SH OPTIONS
+.TP
+.B --install
+Add the plugin namespace \fBdiscord_rpc\fR to the existing \fBcore.control\fR setting in the user's VLC configuration, enabling the plugin for VLC.
+.TP
+.B --uninstall
+Remove \fBdiscord_rpc\fR from the \fBcore.control\fR setting and remove the plugin module entry.
+.SH CONFIGURATION FILE LOCATION
+On Linux the tool locates the user's VLC configuration file at:
+.PP
+If \fBXDG_CONFIG_HOME\fR is set:
+.nf
+$XDG_CONFIG_HOME/vlc/vlcrc
+.fi
+.PP
+If \fBXDG_CONFIG_HOME\fR is not set and \fBSUDO_USER\fR is set:
+.nf
+/home/$SUDO_USER/.config/vlc/vlcrc
+.fi
+.PP
+Otherwise:
+.nf
+$HOME/.config/vlc/vlcrc
+.fi
+.SH BEHAVIOR
+.TP
+.B --install
+When invoked, \fBvlcrcedit\fR loads \fBvlcrc\fR, locates the \fB[core]\fR module, and ensures the \fBcore.control\fR property contains \fBdiscord_rpc\fR. If the property is empty the plugin namespace is enabled directly; otherwise it is appended, preserving existing values.
+.PP
+.B --uninstall
+When invoked, the tool removes \fBdiscord_rpc\fR from the \fBcore.control\fR value. If the resulting value becomes empty, the property is disabled. It also removes the \fBdiscord_rpc\fR module entry from the saved configuration.
+.SH EXIT STATUS
+.TP
+.B 0
+Successful completion.
+.TP
+.B 1
+An error occurred, such as missing arguments, missing configuration file, missing \fB[core]\fR module, or malformed configuration data.
+.SH NOTES
+This utility is intended to be run as the user whose VLC profile is being modified. It is not a general-purpose configuration editor.
+.SH AUTHORS
+Written by Zukaritasu <zukaritasu@gmail.com>.

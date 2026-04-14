@@ -438,7 +438,7 @@ int main(int argc, char const *argv[])
         }
         else
         {
-            std::cerr << "Invalid argument" << std::endl;
+            std::cerr << "Usage: vlcrcedit [--install | --uninstall]" << std::endl;
             return 1;
         }
     }

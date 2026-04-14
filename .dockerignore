@@ -7,3 +7,8 @@ releases
 installer.nsi
 .test
 *.exe
+nsis/*.exe
+nsis/*.o
+nsis/*.obj
+nsis/*.dll
+nsis/.vscode
