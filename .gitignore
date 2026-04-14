@@ -76,3 +76,4 @@ build_debug
 nsis/.vscode
 nsis/*.exe
 nsis/vlcrcedit
+debian/vlc-discordrpc-plugin.debhelper.log
