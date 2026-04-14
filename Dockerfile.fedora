@@ -10,9 +10,9 @@ COPY . .
 RUN mkdir -p build && cd build && cmake .. && make
 
 RUN rpmdev-setuptree && \
-    mkdir -p ${NAME}-${VERSION} && \
-    cp -r src/ CMakeLists.txt LICENSE README.md INSTALL.md nsis ${NAME}-${VERSION}/ && \
-    tar -czvf $(rpm --eval '%{_sourcedir}')/${NAME}-${VERSION}.tar.gz ${NAME}-${VERSION} && \
+    mkdir -p ${NAME} && \
+    cp -r src/ CMakeLists.txt LICENSE README.md INSTALL.md nsis ${NAME}/ && \
+    tar -czvf $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz ${NAME} && \
     rpmbuild -ba fedora/vlc-discordrpc-plugin.spec
 
 RUN mkdir -p /outputs/fedora/${VERSION} && \

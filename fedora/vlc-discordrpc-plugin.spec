@@ -19,7 +19,7 @@ This plugin integrates VLC Media Player with Discord Rich Presence,
 showing playback status, title, and progress directly in Discord.
 
 %prep
-%autosetup
+%setup -q -n %{name}
 
 %build
 %cmake
