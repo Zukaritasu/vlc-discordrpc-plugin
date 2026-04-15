@@ -6,7 +6,6 @@ Summary:        Discord Rich Presence plugin for VLC
 License:        GPL-2.0-or-later
 URL:            https://github.com/Zukaritasu/%{name}
 Source0:        https://github.com/Zukaritasu/%{name}/archive/refs/tags/%{version}.tar.gz
-Source1:        vlcrcedit.1
 
 BuildRequires:  gcc-c++
 BuildRequires:  vlc-devel
@@ -32,7 +31,7 @@ g++ %{optflags} %{build_ldflags} nsis/vlcrcedit.cpp -o nsis/vlcrcedit
 %cmake_install
 
 mkdir -p %{buildroot}%{_mandir}/man1
-install -m 644 %{SOURCE1} %{buildroot}%{_mandir}/man1/vlcrcedit.1
+install -m 644 docs/vlcrcedit.1 %{buildroot}%{_mandir}/man1/vlcrcedit.1
 install -D -m 755 nsis/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
 
 %files
