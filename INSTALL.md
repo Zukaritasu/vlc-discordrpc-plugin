@@ -53,7 +53,7 @@ Restart VLC to load the plugin.
 ### 1. Prerequisites
 You need to install the VLC development libraries (`libvlccore-dev` or `vlc-devel`), CMake, and a compiler.
 
-* **Debian / Ubuntu / Mint:**
+* **Debian / Ubuntu:**
   ```bash
   sudo apt update
   sudo apt install build-essential cmake pkg-config libvlccore-dev
@@ -62,11 +62,6 @@ You need to install the VLC development libraries (`libvlccore-dev` or `vlc-deve
 * **Fedora:**
   ```bash
   sudo dnf install cmake gcc-c++ vlc-devel
-  ```
-
-* **Arch Linux:**
-  ```bash
-  sudo pacman -S cmake base-devel vlc
   ```
 
 ### 2. Compilation
@@ -94,9 +89,13 @@ However, this path **can vary depending on your distribution**. If `cmake --inst
 ### 4. Manual Installation (Optional)
 If you prefer to install it manually:
 
-* **System-wide (Example path):**
+* **Debian / Ubuntu:**
   ```bash
   sudo cp build/libdiscordrpc_plugin.so /usr/lib/x86_64-linux-gnu/vlc/plugins/misc/
+  ```
+* **Fedora:**
+  ```bash
+  sudo cp build/libdiscordrpc_plugin.so /usr/lib64/vlc/plugins/misc/
   ```
 ### 5. Update Plugin Cache (Important)
 After installation, you **must** update the VLC plugin cache. Run the following command in your terminal:

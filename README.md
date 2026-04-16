@@ -57,12 +57,14 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 
 ```bash
 sudo dpkg -i vlc-discordrpc-plugin_1.2.0_amd64.deb
+vlcrcedit --install
 ```
 
 #### Fedora
 
 ```bash
 sudo dnf install vlc-discordrpc-plugin-1.2.0-1.fc41.x86_64.rpm
+vlcrcedit --install
 ```
 
 # Uninstall
@@ -78,11 +80,13 @@ C:\Program Files\vlc-discordrpc-plugin\uninstall.exe
 
 ### Linux (Debian/Ubuntu)
 * ```bash
+  vlcrcedit --uninstall
   sudo dpkg -r vlc-discordrpc-plugin
   ```
 
 ### Fedora
 * ```bash
+  vlcrcedit --uninstall
   sudo dnf remove vlc-discordrpc-plugin
   ```
 
