@@ -119,12 +119,8 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 
 	int64_t i_now = (int64_t)time(NULL);
 	p_md->i_start_time = i_now - (i_vlc_time / 1000000);
-
-	if (i_vlc_len > 0)
-		p_md->i_end_time = p_md->i_start_time + (i_vlc_len / 1000000);
-	else
-		p_md->i_end_time = 0;
-
+	p_md->i_end_time = i_vlc_len > 0 ? p_md->i_start_time + (i_vlc_len / 1000000) : 0;
+	
 	free(psz_title);
 	free(psz_artist);
 	free(psz_album);
