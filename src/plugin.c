@@ -33,7 +33,8 @@
 /**
  * @brief Internal state for the Discord RPC interface.
  */
-struct intf_sys_t {
+struct intf_sys_t
+{
     vlc_discord_t          discord;  /**< Discord RPC handle */
     vlc_discord_settings_t settings; /**< Plugin configuration settings */
     vlc_timer_t            timer;    /**< Timer for periodic presence updates */
@@ -89,7 +90,8 @@ vlc_module_end()
  * 
  * @param data Pointer to the interface thread structure
  */
-static void OnTimer(void *data) {
+static void OnTimer(void *data)
+{
     intf_thread_t *p_intf = (intf_thread_t *)data;
     intf_sys_t *p_sys = (intf_sys_t*)p_intf->p_sys;
 
@@ -107,7 +109,8 @@ static void OnTimer(void *data) {
  * @return VLC_SUCCESS on success, VLC_ENOMEM on memory allocation failure,
  *         VLC_EGENERIC on other errors
  */
-static int Open(vlc_object_t *p_this) {
+static int Open(vlc_object_t *p_this)
+{
     intf_thread_t *p_intf = (intf_thread_t *)p_this;
 
     intf_sys_t *p_sys = malloc(sizeof(intf_sys_t));
@@ -167,7 +170,8 @@ static int Open(vlc_object_t *p_this) {
  * 
  * @param p_this Pointer to the interface thread structure
  */
-static void Close(vlc_object_t *p_this) {
+static void Close(vlc_object_t *p_this)
+{
     intf_thread_t *p_intf = (intf_thread_t *)p_this;
     intf_sys_t *p_sys = (intf_sys_t*)p_intf->p_sys;
 
