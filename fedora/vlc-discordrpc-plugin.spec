@@ -8,11 +8,11 @@ URL:            https://github.com/Zukaritasu/%{name}
 Source0:        https://github.com/Zukaritasu/%{name}/archive/refs/tags/%{version}.tar.gz
 
 BuildRequires:  gcc-c++
-BuildRequires:  vlc-devel
+BuildRequires:  vlc-devel >= 3.0.0
 BuildRequires:  cmake
 BuildRequires:  pkg-config
 
-Requires:       vlc
+Requires:       vlc >= 3.0.0
 
 %description
 This plugin integrates VLC Media Player with Discord Rich Presence, 
