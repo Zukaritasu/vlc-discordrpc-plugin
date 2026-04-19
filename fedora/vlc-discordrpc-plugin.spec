@@ -40,7 +40,6 @@ install -D -m 755 nsis/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
 %{_mandir}/man1/vlcrcedit.1*
 
 %doc README.md
-%doc INSTALL.md
 %{_libdir}/vlc/plugins/misc/libdiscordrpc_plugin.so
 
 %changelog
