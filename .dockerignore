@@ -1,10 +1,7 @@
-.images
-.github
 build
 build_release
 build_debug
 releases
-installer.nsi
 .test
 *.exe
 nsis/*.exe

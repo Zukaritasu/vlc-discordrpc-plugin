@@ -2,23 +2,20 @@ FROM fedora:41 AS build-fedora
 ARG NAME=vlc-discordrpc-plugin
 ARG VERSION
 
-RUN dnf install -y gcc-c++ make cmake glibc-static libstdc++-static pkgconfig vlc-devel rpm-build fedora-packager && dnf clean all
+RUN dnf install -y git gcc-c++ make cmake glibc-static libstdc++-static pkgconfig vlc-devel rpm-build fedora-packager && dnf clean all
 
 WORKDIR /app
 COPY . .
 
-RUN mkdir -p build && cd build && cmake .. && make
-
 RUN rpmdev-setuptree && \
-    mkdir -p ${NAME} && \
-    cp -r src/ CMakeLists.txt LICENSE README.md INSTALL.md nsis docs/ ${NAME}/ && \
-    find ${NAME} -type f -exec chmod 644 {} + && \
-    tar -czvf $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz ${NAME} && \
+    git archive --format=tar.gz \
+                --prefix=${NAME}/ \
+                -o $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz HEAD && \
     rpmbuild -ba fedora/vlc-discordrpc-plugin.spec
 
 RUN mkdir -p /outputs/fedora/${VERSION} && \
-    cp $(rpm --eval '%{_rpmdir}')/x86_64/${NAME}-*.rpm /outputs/fedora/${VERSION} && \
-    cp $(rpm --eval '%{_srcrpmdir}')/${NAME}-*.src.rpm /outputs/fedora/${VERSION}
+    cp $(rpm --eval '%{_rpmdir}')/x86_64/${NAME}-${VERSION}*.rpm /outputs/fedora/${VERSION} && \
+    cp $(rpm --eval '%{_srcrpmdir}')/${NAME}-${VERSION}*.src.rpm /outputs/fedora/${VERSION}
 
 FROM scratch AS exporter
 COPY --from=build-fedora /outputs/fedora .
