@@ -1,7 +1,14 @@
+vlc-discordrpc-plugin (1.2.0-3) unstable; urgency=medium
+
+  * Correction of package format and date
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 19:06:00 -0400
+
 vlc-discordrpc-plugin (1.2.0-2) unstable; urgency=medium
+
   * Release unstable version for Debian 
 
- -- Zukaritasu <zukaritasu@gmail.com>  Sat, 04 Apr 2026 12:12:00 -0400
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 18:00:00 -0400
 
 vlc-discordrpc-plugin (1.2.0-1) noble; urgency=medium
 
