@@ -1,4 +1,4 @@
-vlc-discordrpc-plugin (1.2.0-1) noble; urgency=medium
+vlc-discordrpc-plugin (1.2.0-1) unstable; urgency=medium
 
   * Release version 1.2.0.
   * The static Rich Presence has been replaced with a user-customizable Rich
