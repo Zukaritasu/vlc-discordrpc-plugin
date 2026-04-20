@@ -1,6 +1,6 @@
 vlc-discordrpc-plugin (1.2.0-4) unstable; urgency=medium
 
-  * Fix debian/watch and debian/changelog files 
+  * Fix debian/watch and debian/changelog files
 
  -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 19:34:38 -0400
 
