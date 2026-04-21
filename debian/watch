@@ -1,5 +1,5 @@
 version=4
-opts=downloadurlmangle=s%archive/refs/tags/v(.*)\.tar\.gz%releases/download/v$1/@PACKAGE@-$1\.tar\.xz%,\
+opts=downloadurlmangle=s%archive/refs/tags/(\d\S+)\.tar\.gz%releases/download/$1/vlc-discordrpc-plugin-$1.tar.gz%,\
     pgpsigurlmangle=s/$/.asc/ \
     https://github.com/Zukaritasu/vlc-discordrpc-plugin/tags \
-    (?:.*?/)?v?@ANY_VERSION@@ARCHIVE_EXT@
+    .*/v?(\d\S+)\.tar\.gz
