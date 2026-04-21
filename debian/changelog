@@ -1,3 +1,53 @@
+vlc-discordrpc-plugin (1.2.1-1) unstable; urgency=medium
+
+  * An issue with configuring the plugin on systems such as Debian/Ubuntu
+    and Fedora during installation or uninstallation has been resolved.
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 09:20:00 -0400
+
+vlc-discordrpc-plugin (1.2.0-8) unstable; urgency=medium
+
+  * Fix for debian/watch
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 08:35:17 -0400
+
+vlc-discordrpc-plugin (1.2.0-7) unstable; urgency=medium
+
+  * Fix for debian/watch using version 4 macros and proper
+    filenamemangle
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 07:09:32 -0400
+
+vlc-discordrpc-plugin (1.2.0-6) unstable; urgency=medium
+
+  * Fix debian/watch file
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 20:10:56 -0400
+
+vlc-discordrpc-plugin (1.2.0-5) unstable; urgency=medium
+
+  *  Fix debian/watch file
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 20:00:14 -0400
+
+vlc-discordrpc-plugin (1.2.0-4) unstable; urgency=medium
+
+  * Fix debian/watch and debian/changelog files
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 19:34:38 -0400
+
+vlc-discordrpc-plugin (1.2.0-3) unstable; urgency=medium
+
+  * Correction of package format and date
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 19:06:00 -0400
+
+vlc-discordrpc-plugin (1.2.0-2) unstable; urgency=medium
+
+  * Release unstable version for Debian
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Mon, 20 Apr 2026 18:00:00 -0400
+
 vlc-discordrpc-plugin (1.2.0-1) noble; urgency=medium
 
   * Release version 1.2.0.

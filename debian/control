@@ -1,9 +1,10 @@
+Rules-Requires-Root: no
 Source: vlc-discordrpc-plugin
 Section: misc
 Priority: optional
 Maintainer: Zukaritasu <zukaritasu@gmail.com>
 Build-Depends: debhelper-compat (= 13), cmake, pkgconf, libvlccore-dev (>= 3.0.0)
-Standards-Version: 4.6.2
+Standards-Version: 4.7.3
 Homepage: https://github.com/Zukaritasu/vlc-discordrpc-plugin
 
 Package: vlc-discordrpc-plugin

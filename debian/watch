@@ -1,3 +1,4 @@
 version=4
-https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases \
-  .*/v?(\d\S+)\.tar\.gz
+opts="pgpsigurlmangle=s/$/\.asc/" \
+  https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases \
+  .*/v?(\d\S+)\.(?:tar\.gz|zip)
