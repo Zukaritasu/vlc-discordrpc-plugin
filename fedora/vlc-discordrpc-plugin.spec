@@ -18,6 +18,15 @@ Requires:       vlc >= 3.0.0
 This plugin integrates VLC Media Player with Discord Rich Presence, 
 showing playback status, title, and progress directly in Discord.
 
+%post
+if [ $1 -gt 1 ] ; then
+    echo "======================================================================="
+	echo " Plugin installed! To enable it in your VLC, run the following command"
+	echo " as your regular user in the terminal:"
+	echo "    vlcrcedit --install"
+	echo "======================================================================="
+fi
+
 %prep
 %setup -q -n %{name}
 
