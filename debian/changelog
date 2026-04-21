@@ -1,3 +1,10 @@
+vlc-discordrpc-plugin (1.2.0-7) unstable; urgency=medium
+
+  * Fix for debian/watch using version 4 macros and proper
+    filenamemangle
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 07:09:32 -0400
+
 vlc-discordrpc-plugin (1.2.0-6) unstable; urgency=medium
 
   * Fix debian/watch file
