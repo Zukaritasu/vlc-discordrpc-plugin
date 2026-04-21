@@ -1,6 +1,11 @@
 Discord Rich Presence for VLC - Version History
 ===============================================
 
+Version 1.2.1 (2026-04-21)
+--------------------------
+* An issue with configuring the plugin on systems such as Debian/Ubuntu
+  and Fedora during installation or uninstallation has been resolved.
+
 Version 1.2.0 (2026-04-04)
 --------------------------
 * The static Rich Presence has been replaced with a user-customizable Rich Presence using tokens

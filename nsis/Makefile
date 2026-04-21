@@ -1,6 +1,6 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -Wpedantic -DNDEBUG
-VERSION   = 1.2.0
+VERSION   = 1.2.1
 
 ifeq ($(OS),Windows_NT)
 	EXT_EXECUTABLE = .exe

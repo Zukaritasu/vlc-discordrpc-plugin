@@ -1,3 +1,10 @@
+vlc-discordrpc-plugin (1.2.1-1) unstable; urgency=medium
+
+  * An issue with configuring the plugin on systems such as Debian/Ubuntu
+    and Fedora during installation or uninstallation has been resolved.
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 09:20:00 -0400
+
 vlc-discordrpc-plugin (1.2.0-8) unstable; urgency=medium
 
   * Fix for debian/watch
