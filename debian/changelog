@@ -1,3 +1,10 @@
+vlc-discordrpc-plugin (1.2.1-4) unstable; urgency=medium
+
+  * update filenamemangle regex in debian/watch to correctly handle
+    versioning and naming conventions
+
+ -- Zukaritasu <zukaritasu@gmail.com>  Tue, 21 Apr 2026 23:01:19 -0400
+
 vlc-discordrpc-plugin (1.2.1-3) unstable; urgency=medium
 
   * Fixed debian/watch
