@@ -1,6 +1,7 @@
 version=4
-opts="downloadurlmangle=s%^.*/archive/refs/tags/v?(\d\S+)\.tar\.gz$%https://github.com/Zukaritasu/vlc-discordrpc-plugin/releases/download/$1/vlc-discordrpc-plugin-$1.tar.gz%,\
+opts=\
+downloadurlmangle=s%archive/refs/tags/(\d\S+)\.tar\.gz%releases/download/$1/vlc-discordrpc-plugin-$1.tar.gz%,\
 pgpsigurlmangle=s/$/.asc/,\
-filenamemangle=s%.*/v?(\d\S+)\.tar\.gz%vlc-discordrpc-plugin_$1.orig.tar.gz%" \
-https://github.com/Zukaritasu/vlc-discordrpc-plugin/tags \
-.*/v?(\d\S+)\.tar\.gz
+filenamemangle=s%.*/vlc-discordrpc-plugin-(\d\S+)\.tar\.gz%vlc-discordrpc-plugin_$1.orig.tar.gz% \
+    https://github.com/Zukaritasu/vlc-discordrpc-plugin/tags \
+    .*/v?(\d\S+)\.tar\.gz
