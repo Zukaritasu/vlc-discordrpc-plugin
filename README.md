@@ -75,7 +75,7 @@ To uninstall the plugin, go to Control Panel > Programs and Features, find 'Disc
 
 Path to the uninstaller, in case you want to run it directly without going through the Control Panel
 ```
-C:\Program Files\vlc-discordrpc-plugin\uninstall.exe
+C:\Program Files\vlc-discordrpc-plugin\unins000.exe
 ```
 
 ### Linux (Debian/Ubuntu)
