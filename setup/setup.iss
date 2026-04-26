@@ -41,7 +41,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\NEWS.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\nsis\vlcrcedit.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\inst\vlcrcedit.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\releases\windows\{#MyAppVersion}\{#MyDLLName}"; DestDir: "{code:GetVLCPath}\plugins\misc"; Flags: ignoreversion
 
 [Run]
