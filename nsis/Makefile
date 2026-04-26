@@ -26,11 +26,11 @@ $(RES_OBJ): resource.rc
 $(TARGET): $(SRC) $(RES_OBJ)
 	$(CXX) $(CXXFLAGS) $(SRC) $(RES_OBJ) -o $(TARGET) $(LDFLAGS)
 
-installer:
+setup:
 	cd .. && \
 	mkdir -p releases/windows/$(VERSION) && \
 	cp build/libdiscordrpc_plugin.dll releases/windows/$(VERSION)/libdiscordrpc_plugin.dll && \
-	makensis //DVERSION=$(VERSION) installer.nsi
+	iscc -dMyAppVersion=$(VERSION) "setup/setup.iss"
 
 clean:
 	rm -f $(TARGET) $(RES_OBJ)
