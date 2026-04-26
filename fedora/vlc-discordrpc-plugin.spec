@@ -34,14 +34,14 @@ fi
 %cmake
 %cmake_build
 
-g++ %{optflags} %{build_ldflags} nsis/vlcrcedit.cpp -o nsis/vlcrcedit
+g++ %{optflags} %{build_ldflags} inst/vlcrcedit.cpp -o inst/vlcrcedit
 
 %install
 %cmake_install
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -m 644 docs/vlcrcedit.1 %{buildroot}%{_mandir}/man1/vlcrcedit.1
-install -D -m 755 nsis/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
+install -D -m 755 inst/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
 
 %files
 %license LICENSE
