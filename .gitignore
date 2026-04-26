@@ -77,3 +77,7 @@ nsis/.vscode
 nsis/*.exe
 nsis/vlcrcedit
 debian/vlc-discordrpc-plugin.debhelper.log
+*.tar.gz
+*.tar.gz.asc
+*.orig.tar.gz
+

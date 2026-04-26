@@ -1,4 +1,1 @@
 debian/ export-ignore
-fedora/ export-ignore
-*.spec
-.gitattributes export-ignore

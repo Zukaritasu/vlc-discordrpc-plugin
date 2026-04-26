@@ -21,10 +21,10 @@ showing playback status, title, and progress directly in Discord.
 %post
 if [ $1 -gt 1 ] ; then
     echo "======================================================================="
-	echo " Plugin installed! To enable it in your VLC, run the following command"
-	echo " as your regular user in the terminal:"
-	echo "    vlcrcedit --install"
-	echo "======================================================================="
+    echo " Plugin installed! To enable it in your VLC, run the following command"
+    echo " as your regular user in the terminal:"
+    echo "    vlcrcedit --install"
+    echo "======================================================================="
 fi
 
 %prep
@@ -51,14 +51,9 @@ install -D -m 755 nsis/vlcrcedit %{buildroot}%{_bindir}/vlcrcedit
 %doc README.md
 %{_libdir}/vlc/plugins/misc/libdiscordrpc_plugin.so
 
+%check
+# No upstream tests available
+
 %changelog
- * Tue Apr 21 2026 Zukaritasu <zukaritasu@gmail.com> - 1.2.1-1
- - An issue with configuring the plugin on systems such as Debian/Ubuntu
-   and Fedora during installation or uninstallation has been resolved.
-
- * Sat Apr 04 2026 Zukaritasu <zukaritasu@gmail.com> - 1.2.0-1
- - The static Rich Presence has been replaced with a user-customizable Rich Presence using tokens
- - In addition, several internal bugs were fixed.
-
- * Wed Mar 04 2026 Zukaritasu <zukaritasu@gmail.com> - 1.1.0-1
- - Initial package
+* Thu Apr 23 2026 Zukaritasu <zukaritasu@gmail.com> - 1.2.1-1
+- Initial Release
