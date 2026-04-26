@@ -6,7 +6,7 @@ WINDRES  = windres
 
 ifeq ($(OS),Windows_NT)
 	EXT_EXECUTABLE = .exe
-	RES_OBJ = resources.o
+	RES_OBJ = resource.o
 	LDFLAGS = -s -static -static-libgcc -static-libstdc++ -lole32 -luuid
 else
 	LDFLAGS  += -Wl,-z,relro -Wl,-z,now
@@ -20,8 +20,8 @@ SRC      = vlcrcedit.cpp
 
 all: $(TARGET)
 
-$(RES_OBJ): ../src/resources.rc
-	$(WINDRES) ../src/resources.rc $@
+$(RES_OBJ): resource.rc
+	$(WINDRES) resource.rc $@
 
 $(TARGET): $(SRC) $(RES_OBJ)
 	$(CXX) $(CXXFLAGS) $(SRC) $(RES_OBJ) -o $(TARGET) $(LDFLAGS)
