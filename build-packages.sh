@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NAME="vlc-discordrpc-plugin"
-RELEASES_DIR="./releases"
+RELEASES_DIR="releases"
 CURRENT_VERSION="1.2.1"
 
 mkdir -p "${RELEASES_DIR}/fedora"
@@ -12,6 +12,7 @@ docker build -t "${NAME}-fedora" -f Dockerfile.fedora --build-arg VERSION="${CUR
 
 echo "--- Building and extracting for Ubuntu ---"
 docker build -t "${NAME}-ubuntu" -f Dockerfile.ubuntu --build-arg VERSION="${CURRENT_VERSION}" --build-arg NAME="${NAME}" --output "${RELEASES_DIR}/ubuntu" .
+git archive -o "${RELEASES_DIR}/ubuntu/${CURRENT_VERSION}/vlc-discordrpc-plugin-${CURRENT_VERSION}-1.tar.gz" HEAD
 
 echo "--------------------------------------------------------"
 echo "Process completed. Binaries are in ${RELEASES_DIR}"
