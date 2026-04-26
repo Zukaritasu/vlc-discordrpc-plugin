@@ -1,5 +1,5 @@
-vlc-discordrpc-plugin (1.2.1-1) unstable; urgency=medium
+vlc-discordrpc-plugin (1.2.2-1) unstable; urgency=medium
 
   * Initial Release (Closes: #1134669)
 
- -- Zukaritasu <zukaritasu@gmail.com>  Wed, 22 Apr 2026 18:16:04 -0400
+ -- Zukaritasu <zukaritasu@gmail.com>  Sun, 26 Apr 2026 10:30:31 -0400

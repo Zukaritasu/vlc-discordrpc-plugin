@@ -1,6 +1,12 @@
 Discord Rich Presence for VLC - Version History
 ===============================================
 
+Version 1.2.2 (2026-04-26)
+--------------------------
+* Switched from NSIS to Inno Setup for the Windows installer to address security false positives.
+* In the process of adding official packages for Debian/Ubuntu and Fedora.
+* Added `resource.rc` to the `Vlcrcedit` executable on Windows to ensure proper file metadata.
+
 Version 1.2.1 (2026-04-21)
 --------------------------
 * An issue with configuring the plugin on systems such as Debian/Ubuntu

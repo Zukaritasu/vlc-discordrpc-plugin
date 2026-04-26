@@ -1,6 +1,6 @@
 CXX      = g++
 CXXFLAGS = -O2 -Wall -Wextra -Wpedantic -DNDEBUG
-VERSION  = 1.2.1
+VERSION  = 1.2.2
 
 WINDRES  = windres
 
