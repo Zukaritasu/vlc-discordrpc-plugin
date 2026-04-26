@@ -26,7 +26,7 @@ This is a plugin specifically developed to display the user's activity in VLC on
 - **Enable or disable rich presence**: In the plugin settings (requires restarting VLC)
 - **Enable or disable details or state**: In the plugin settings (requires restarting VLC)
 - **Customization of details, status, large text and small text**: In the plugin settings (requires restarting VLC)
-- **Show artist or album**: 
+- **Show artist or album**: In the plugin settings (requires restarting VLC)
 - **Custom Discord Application ID**: In the plugin settings (requires restarting VLC)
 
 > [!IMPORTANT]  
@@ -56,14 +56,14 @@ Since the plugin is not part of the VLC compilation, you must install the downlo
 #### Debian/Ubuntu
 
 ```bash
-sudo dpkg -i vlc-discordrpc-plugin_1.2.0_amd64.deb
+sudo dpkg -i vlc-discordrpc-plugin_1.2.2-1_amd64.deb
 vlcrcedit --install
 ```
 
 #### Fedora
 
 ```bash
-sudo dnf install vlc-discordrpc-plugin-1.2.0-1.fc41.x86_64.rpm
+sudo dnf install vlc-discordrpc-plugin-1.2.2-1.fc42.x86_64.rpm
 vlcrcedit --install
 ```
 
