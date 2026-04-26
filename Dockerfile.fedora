@@ -1,4 +1,4 @@
-FROM fedora:41 AS build-fedora
+FROM fedora:42 AS build-fedora
 ARG NAME=vlc-discordrpc-plugin
 ARG VERSION
 
@@ -9,8 +9,8 @@ COPY . .
 
 RUN rpmdev-setuptree && \
     git archive --format=tar.gz \
-                --prefix=${NAME}/ \
-                -o $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz HEAD && \
+    --prefix=${NAME}/ \
+    -o $(rpm --eval '%{_sourcedir}')/${VERSION}.tar.gz HEAD && \
     rpmbuild -ba fedora/vlc-discordrpc-plugin.spec
 
 RUN mkdir -p /outputs/fedora/${VERSION} && \
