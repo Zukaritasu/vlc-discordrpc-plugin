@@ -30,8 +30,8 @@ WORKDIR /tmp/clean-source
 RUN dpkg-buildpackage -us -uc -b
 
 RUN mkdir -p /outputs/debian/${VERSION} && \
-    cp /tmp/${NAME}_${VERSION}*.deb /outputs/debian/${VERSION} 2>/dev/null || \
-    cp /${NAME}_${VERSION}*.deb /outputs/debian/${VERSION}
+    cp /tmp/${NAME}_${VERSION}* /outputs/debian/${VERSION} 2>/dev/null || \
+    cp /${NAME}_${VERSION}* /outputs/debian/${VERSION}
 
 FROM scratch AS exporter
 COPY --from=build-ubuntu /outputs/debian .
