@@ -1,0 +1,7 @@
+name = "covers"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[[r2_buckets]]
+binding = "COVERS_BUCKET"
+bucket_name = "vlc-discordrpc-plugin-bucket"
