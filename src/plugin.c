@@ -16,6 +16,8 @@
  * more details.
  *****************************************************************************/
 
+// clang-format off
+
 #define MODULE_STRING "discord_rpc"
 #define VLC_MODULE_COPYRIGHT "Copyright (C) 2026 Zukaritasu"
 #define VLC_MODULE_LICENSE VLC_LICENSE_GPL_2_PLUS
