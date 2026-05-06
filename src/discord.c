@@ -21,6 +21,7 @@
 #include "metadata.h"
 #include "pluginimages.h"
 #include "format.h"
+#include "cover.h"
 
 #include <vlc_common.h>
 #include <vlc_threads.h>
@@ -77,6 +78,12 @@ typedef struct
 	 * Plugin user preferences.
 	 */
 	vlc_discord_settings_t settings;
+
+	/**
+	 * Handle for managing cover art retrieval and caching.
+	 * This allows the plugin to fetch and store cover URLs for the current media.
+	 */
+	cover_handle_t* p_chandle; 
 
 } vlc_discord_internal_data_t;
 
@@ -214,7 +221,7 @@ static bool Impl_Update(vlc_discord_t *self)
 		return true;
 	}
 
-	DiscordRPC_GetCurrentMetadata(p_sys->p_intf, &p_sys->metadata);
+	DiscordRPC_GetCurrentMetadata(p_sys->p_intf, p_sys->p_chandle, &p_sys->metadata);
 
 	vlc_mutex_lock(&p_sys->lock);
 
@@ -256,8 +263,8 @@ static bool Impl_Update(vlc_discord_t *self)
 		}
 
 		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), 
-				 p_sys->metadata.b_is_audio && !p_sys->metadata.b_is_video ? 
-				 PLUGIN_IMAGE_LARGE_MUSIC : PLUGIN_IMAGE_LARGE_DEFAULT);
+				 p_sys->metadata.sz_cover_url[0] ? p_sys->metadata.sz_cover_url : 
+				 PLUGIN_IMAGE_LARGE_DEFAULT);
 
 		if (p_sys->metadata.b_is_video)
 			p_sys->presence.i_type = ACTIVITY_TYPE_WATCHING;
@@ -316,6 +323,7 @@ static bool Impl_Destroy(vlc_discord_t *self)
 		return false;
 	vlc_discord_internal_data_t *p_sys = (vlc_discord_internal_data_t *)self->p_sys;
 
+	DiscordRPC_CloseCoverHandle(p_sys->p_chandle);
 	free(p_sys);
 	self->p_sys = NULL;
 
@@ -373,10 +381,18 @@ bool DiscordRPC_CreateInstance(vlc_discord_t *discord, vlc_discord_settings_t st
 		return false;
 	}
 
-	((vlc_discord_internal_data_t *)discord->p_sys)->p_intf = p_intf;
-	((vlc_discord_internal_data_t *)discord->p_sys)->settings = stgs;
+	vlc_discord_internal_data_t * p_int_data = ((vlc_discord_internal_data_t *)discord->p_sys);
+	p_int_data->p_chandle = DiscordRPC_CreateCoverHandle(p_intf);
+	if (!p_int_data->p_chandle)
+	{
+		free(discord->p_sys);
+		return false;
+	}
+	
+	p_int_data->p_intf = p_intf;
+	p_int_data->settings = stgs;
 
-	vlc_mutex_init(&((vlc_discord_internal_data_t *)discord->p_sys)->lock);
+	vlc_mutex_init(&p_int_data->lock);
 
 	return true;
 }
