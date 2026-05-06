@@ -28,6 +28,7 @@
 #include <vlc_arrays.h>
 
 #include "discordipc.h"
+#include "cover.h"
 
 // Plugin metadata tokens
 
@@ -64,6 +65,7 @@ typedef struct
     char sz_title[DISCORD_FIELD_MAX];  /**< Track or filename title */
     char sz_artist[DISCORD_FIELD_MAX]; /**< Performer or creator name */
     char sz_album[DISCORD_FIELD_MAX];  /**< Album or collection title */
+    char sz_cover_url[DISCORD_FIELD_MAX]; /**< Album cover URL */
 
     int64_t i_start_time; /**< Playback start timestamp (Epoch) */
     int64_t i_end_time;   /**< Estimated playback end timestamp (Epoch) */
@@ -81,10 +83,11 @@ typedef struct
  * * Accesses the internal VLC input thread to retrieve meta tags (Artist, Title, etc.)
  * and calculates the current playback state and timestamps. 
  * * @param p_intf Pointer to the VLC interface thread.
+ * @param p_chandle Pointer to the cover handle for retrieving cover URLs.
  * @param p_md   Pointer to the metadata structure to be populated.
  * @return true if metadata was successfully retrieved, false otherwise.
  */
-bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t *p_md);
+bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, cover_handle_t* p_chandle, vlc_discord_metadata_t *p_md);
 
 /**
  * @brief Converts the metadata structure into a dictionary format.

@@ -56,7 +56,7 @@ static playlist_info_t GetPlaylistInfo(intf_thread_t *p_intf)
     return info;
 }
 
-bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t *p_md)
+bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, cover_handle_t* p_chandle, vlc_discord_metadata_t *p_md)
 {
 	if (!p_intf || !p_md) return false;
 
@@ -91,7 +91,14 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 	char *psz_title = input_item_GetMeta(p_item, vlc_meta_Title);
 	char *psz_artist = input_item_GetMeta(p_item, vlc_meta_Artist);
 	char *psz_album = input_item_GetMeta(p_item, vlc_meta_Album);
+	char* psz_artworkurl = input_item_GetMeta(p_item, vlc_meta_ArtworkURL);
 
+	if (psz_artworkurl)
+	{
+		DiscordRPC_GetCoverURL(p_chandle, psz_artworkurl, p_md->sz_cover_url, 
+			sizeof(p_md->sz_cover_url));
+	}
+	
 	if (!psz_title)
 	{
 		psz_title = input_item_GetName(p_item);
@@ -124,6 +131,7 @@ bool DiscordRPC_GetCurrentMetadata(intf_thread_t *p_intf, vlc_discord_metadata_t
 	free(psz_title);
 	free(psz_artist);
 	free(psz_album);
+	free(psz_artworkurl);
 
 	vlc_object_release(p_input);
 	
