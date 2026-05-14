@@ -26,7 +26,9 @@
 #include <vlc_image.h>
 #include <vlc_block.h>
 #include <vlc_picture.h>
+
 #include <stdint.h>
+#include <sys/stat.h>
 
 #include "cover_api.h"
 
