@@ -2,7 +2,7 @@ FROM fedora:42 AS build-fedora
 ARG NAME=vlc-discordrpc-plugin
 ARG VERSION
 
-RUN dnf install -y git gcc-c++ make cmake glibc-static libstdc++-static pkgconfig vlc-devel rpm-build fedora-packager && dnf clean all
+RUN dnf install -y git gcc-c++ make cmake glibc-static libstdc++-static pkgconfig vlc-devel libcurl-devel rpm-build fedora-packager && dnf clean all
 
 WORKDIR /app
 COPY . .

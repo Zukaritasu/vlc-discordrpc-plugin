@@ -22,12 +22,25 @@ if(WIN32)
     message(STATUS "Configuring for Windows...")
 
     find_package(PkgConfig REQUIRED)
+
     pkg_check_modules(VLC vlc-plugin IMPORTED_TARGET)
+    pkg_check_modules(CURL libcurl IMPORTED_TARGET)
 
     if(NOT VLC_FOUND)
         message(FATAL_ERROR 
             " ERROR: 'vlc-plugin' module not found.\n"
             " Please install: pacman -S mingw-w64-x86_64-vlc\n"
+        )
+    endif()
+
+    set(PKG_CONFIG_USE_STATIC_LIBS ON)
+    pkg_check_modules(CURL REQUIRED libcurl)
+    set(PKG_CONFIG_USE_STATIC_LIBS OFF)
+
+    if(NOT CURL_FOUND)
+        message(FATAL_ERROR 
+            " ERROR: 'libcurl' module not found.\n"
+            " Please install: pacman -S mingw-w64-x86_64-curl\n"
         )
     endif()
 
@@ -39,6 +52,7 @@ if(WIN32)
         poll=WSAPoll 
         pollfd=WSAPOLLFD
         _WIN32_WINNT=0x0600
+        CURL_STATICLIB
     )
 
     target_compile_options(discordrpc_plugin PRIVATE -include winsock2.h)
@@ -48,7 +62,11 @@ if(WIN32)
         SUFFIX ".dll"
     )
     
-    target_link_libraries(discordrpc_plugin PRIVATE PkgConfig::VLC)
+    target_link_directories(discordrpc_plugin PRIVATE ${CURL_STATIC_LIBRARY_DIRS})
+    target_link_libraries(discordrpc_plugin PRIVATE 
+        PkgConfig::VLC 
+        -Wl,-Bstatic ${CURL_STATIC_LIBRARIES} -Wl,-Bdynamic
+    )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         target_link_options(discordrpc_plugin PRIVATE -Wl,-s)
@@ -74,7 +92,9 @@ elseif (APPLE)
     message(STATUS "Configuring for MacOS...")
 
     find_package(PkgConfig REQUIRED)
+
     pkg_check_modules(VLC REQUIRED libvlc IMPORTED_TARGET)
+    pkg_check_modules(CURL REQUIRED libcurl IMPORTED_TARGET)
 
     add_library(discordrpc_plugin SHARED ${SOURCES})
 
@@ -83,7 +103,10 @@ elseif (APPLE)
         SUFFIX ".dylib"
     )
 
-    target_link_libraries(discordrpc_plugin PRIVATE PkgConfig::VLC)
+    target_link_libraries(discordrpc_plugin PRIVATE 
+        PkgConfig::VLC
+        PkgConfig::CURL
+    )
 
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
         set(CMAKE_SKIP_INSTALL_RPATH OFF)
@@ -106,13 +129,23 @@ elseif (UNIX)
     message(STATUS "Configuring for Linux...")
     
     find_package(PkgConfig REQUIRED)
+
     pkg_check_modules(VLC vlc-plugin IMPORTED_TARGET)
+    pkg_check_modules(CURL libcurl IMPORTED_TARGET)
 
     if(NOT VLC_FOUND)
         message(FATAL_ERROR 
             " ERROR: 'vlc-plugin' module not found.\n"
             " For Ubuntu/Debian, please install: sudo apt install libvlccore-dev\n"
             " For Fedora, please install: sudo dnf install vlc-devel"
+        )
+    endif()
+
+    if(NOT CURL_FOUND)
+        message(FATAL_ERROR 
+            " ERROR: 'libcurl' module not found.\n"
+            " For Ubuntu/Debian, please install: sudo apt install libcurl4-openssl-dev\n"
+            " For Fedora, please install: sudo dnf install libcurl-devel"
         )
     endif()
 
@@ -123,7 +156,10 @@ elseif (UNIX)
         SUFFIX ".so"
     )
     
-    target_link_libraries(discordrpc_plugin PRIVATE PkgConfig::VLC)
+    target_link_libraries(discordrpc_plugin PRIVATE
+        PkgConfig::VLC
+        PkgConfig::CURL
+    )
 
     set_target_properties(discordrpc_plugin PROPERTIES POSITION_INDEPENDENT_CODE ON)
 

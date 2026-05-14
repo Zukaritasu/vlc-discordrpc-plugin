@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     pkg-config \
     libvlccore-dev \
+    libcurl4-openssl-dev \
     devscripts \
     debhelper \
     git \

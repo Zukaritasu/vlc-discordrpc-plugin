@@ -11,6 +11,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  vlc-devel >= 3.0.0
 BuildRequires:  cmake
 BuildRequires:  pkg-config
+BuildRequires:  libcurl-devel
 
 Requires:       vlc >= 3.0.0
 

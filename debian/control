@@ -3,7 +3,7 @@ Source: vlc-discordrpc-plugin
 Section: misc
 Priority: optional
 Maintainer: Zukaritasu <zukaritasu@gmail.com>
-Build-Depends: debhelper-compat (= 13), cmake, pkgconf, libvlccore-dev (>= 3.0.0)
+Build-Depends: debhelper-compat (= 13), cmake, pkgconf, libvlccore-dev (>= 3.0.0), libcurl4-openssl-dev
 Standards-Version: 4.7.3
 Homepage: https://github.com/Zukaritasu/vlc-discordrpc-plugin
 
