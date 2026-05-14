@@ -253,7 +253,7 @@ static bool Impl_Update(vlc_discord_t *self)
 			p_sys->settings.psz_state_format, &p_sys->metadata, &dict);
 		}
 
-		snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), 
+		snprintf(p_sys->presence.sz_small_image, sizeof(p_sys->presence.sz_small_image), "%s",
 			p_sys->metadata.b_is_paused ? PLUGIN_IMAGE_SMALL_PLAY : PLUGIN_IMAGE_SMALL_PAUSE);
 		
 		if (!p_sys->metadata.b_is_paused)
@@ -262,7 +262,7 @@ static bool Impl_Update(vlc_discord_t *self)
 			p_sys->presence.i_end_time = p_sys->metadata.i_end_time;
 		}
 
-		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), 
+		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), "%s",
 				 p_sys->metadata.sz_cover_url[0] ? p_sys->metadata.sz_cover_url : 
 				 PLUGIN_IMAGE_LARGE_DEFAULT);
 
@@ -276,11 +276,11 @@ static bool Impl_Update(vlc_discord_t *self)
 	}
 	else
 	{
-		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), PLUGIN_IMAGE_LARGE_DEFAULT);
-		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), PLUGIN_VLC_TITLE);
-		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), PLUGIN_VLC_TITLE);
+		snprintf(p_sys->presence.sz_large_image, sizeof(p_sys->presence.sz_large_image), "%s", PLUGIN_IMAGE_LARGE_DEFAULT);
+		snprintf(p_sys->presence.sz_large_text, sizeof(p_sys->presence.sz_large_text), "%s", PLUGIN_VLC_TITLE);
+		snprintf(p_sys->presence.sz_name, sizeof(p_sys->presence.sz_name), "%s", PLUGIN_VLC_TITLE);
 
-		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "Idling");
+		snprintf(p_sys->presence.sz_details, sizeof(p_sys->presence.sz_details), "%s", "Idling");
 	}
 
 	DiscordRPC_MetadataDictionaryClear(&dict);
