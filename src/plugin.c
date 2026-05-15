@@ -78,6 +78,7 @@ vlc_module_begin()
     add_bool(ID_RPC_ENABLE, true, "Enable Rich Presence", "Enable or disable Discord Rich Presence integration.", false)
     add_bool(ID_RPC_ENABLE_DETAILS, true, "Enable details", "Enable or disable the details field in Discord Rich Presence.", false)
     add_bool(ID_RPC_ENABLE_STATE, true, "Enable state", "Enable or disable the state field in Discord Rich Presence.", false)
+    add_bool(ID_RPC_ENABLE_COVER, true, "Enable cover art", "Enable or disable the cover art in Discord Rich Presence.", false)
 
     // end - settings
 

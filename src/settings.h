@@ -34,6 +34,7 @@
 
 #define ID_RPC_ENABLE_DETAILS    CFG_PREFIX "enable-details-field"
 #define ID_RPC_ENABLE_STATE      CFG_PREFIX "enable-state-field"
+#define ID_RPC_ENABLE_COVER      CFG_PREFIX "enable-cover-field"
 
 /**
  * @brief Default Discord Application ID.
@@ -52,6 +53,7 @@ typedef struct
     bool     b_enable;        /**< Master switch for the plugin */
     bool     b_enable_details; /**< Toggle for the details field in Rich Presence */
     bool     b_enable_state;   /**< Toggle for the state field in Rich Presence */
+    bool     b_enable_cover;   /**< Toggle for showing cover art in Rich Presence */
 
     char*    psz_details_format;    /**< Format string for the details field */
     char*    psz_state_format;      /**< Format string for the state field */

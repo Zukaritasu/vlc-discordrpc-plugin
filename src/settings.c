@@ -55,9 +55,10 @@ void DiscordRPC_LoadSettings(vlc_discord_settings_t *p_stgs, void *p_data)
     p_stgs->b_enable         = var_InheritBool(p_intf, ID_RPC_ENABLE);
     p_stgs->b_enable_details = var_InheritBool(p_intf, ID_RPC_ENABLE_DETAILS);
     p_stgs->b_enable_state   = var_InheritBool(p_intf, ID_RPC_ENABLE_STATE);
+    p_stgs->b_enable_cover   = var_InheritBool(p_intf, ID_RPC_ENABLE_COVER);
 
-    p_stgs->psz_details_format = var_InheritString(p_intf, ID_RPC_DETAILS_FORMAT);
-    p_stgs->psz_state_format   = var_InheritString(p_intf, ID_RPC_STATE_FORMAT);
+    p_stgs->psz_details_format    = var_InheritString(p_intf, ID_RPC_DETAILS_FORMAT);
+    p_stgs->psz_state_format      = var_InheritString(p_intf, ID_RPC_STATE_FORMAT);
     p_stgs->psz_large_text_format = var_InheritString(p_intf, ID_RPC_LARGE_TEXT_FORMAT);
     p_stgs->psz_small_text_format = var_InheritString(p_intf, ID_RPC_SMALL_TEXT_FORMAT);
 }
