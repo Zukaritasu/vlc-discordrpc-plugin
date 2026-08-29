@@ -56,12 +56,12 @@ You need to install the VLC development libraries (`libvlccore-dev` or `vlc-deve
 * **Debian / Ubuntu:**
   ```bash
   sudo apt update
-  sudo apt install build-essential cmake pkg-config libvlccore-dev
+  sudo apt install build-essential cmake pkg-config libvlccore-dev libcurl4-openssl-dev
   ```
 
 * **Fedora:**
   ```bash
-  sudo dnf install cmake gcc-c++ vlc-devel
+  sudo dnf install cmake gcc-c++ vlc-devel libcurl-devel
   ```
 
 ### 2. Compilation
