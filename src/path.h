@@ -60,6 +60,10 @@
 #endif
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Obtain the absolute base directory where plugin directory should be depending on the
  * platform.
@@ -106,7 +110,8 @@ static inline char *get_base_plugin_directory(void)
 		i_new_path_size += strlen(PLUGIN_FOLDER_PATH);
 	}
 
-	p_result_base_directory = malloc(sizeof(char) * (i_new_path_size + 1)); // +1 for null character
+	p_result_base_directory =
+		(char *)malloc(sizeof(char) * (i_new_path_size + 1)); // +1 for null character
 
 	if (!p_result_base_directory)
 	{
@@ -172,7 +177,8 @@ static inline wchar_t *wide_append_to_path(const wchar_t *p_path, const size_t i
 
 	va_end(args1);
 
-	p_wide_result_path = malloc(sizeof(wchar_t) * (i_result_size + 1)); // +1 for null character
+	p_wide_result_path =
+		(wchar_t *)malloc(sizeof(wchar_t) * (i_result_size + 1)); // +1 for null character
 
 	if (!p_wide_result_path)
 	{
@@ -245,7 +251,7 @@ static inline char *multibyte_append_to_path(const char *p_path, const size_t i_
 
 	va_end(args1);
 
-	p_result_path = malloc(sizeof(char) * (i_result_size + 1)); // +1 for null character
+	p_result_path = (char *)malloc(sizeof(char) * (i_result_size + 1)); // +1 for null character
 
 	if (!p_result_path)
 	{
@@ -303,7 +309,7 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 
 	i_result_size = strlen(p_base_directory);
 
-	p_wide_base_directory = malloc(sizeof(wchar_t) * (i_result_size + 1));
+	p_wide_base_directory = (wchar_t *)malloc(sizeof(wchar_t) * (i_result_size + 1));
 
 	if (!p_wide_base_directory)
 	{
@@ -338,7 +344,7 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 
 	va_end(args1);
 
-	p_wide_result_path = malloc(sizeof(wchar_t) * (i_result_size + 1));
+	p_wide_result_path = (wchar_t *)malloc(sizeof(wchar_t) * (i_result_size + 1));
 
 	if (!p_wide_result_path)
 	{
@@ -420,7 +426,7 @@ static inline char *multibyte_append_to_plugin_path(const size_t i_length, ...)
 
 	va_end(args1);
 
-	p_result_path = malloc(sizeof(char) * (i_result_size + 1)); // +1 for null character
+	p_result_path = (char *)malloc(sizeof(char) * (i_result_size + 1)); // +1 for null character
 
 	if (!p_result_path)
 	{
@@ -449,5 +455,9 @@ static inline char *multibyte_append_to_plugin_path(const size_t i_length, ...)
 
 	return p_result_path;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // PATH_H
