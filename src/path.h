@@ -152,7 +152,7 @@ static inline wchar_t *wide_append_to_path(const wchar_t *p_path, const size_t i
 		return NULL;
 	}
 
-	const wchar_t *next;
+	const wchar_t *p_next;
 	wchar_t		  *p_wide_result_path = NULL;
 	size_t		   i_result_size	  = 0;
 	va_list		   args1, args2;
@@ -162,14 +162,14 @@ static inline wchar_t *wide_append_to_path(const wchar_t *p_path, const size_t i
 
 	i_result_size = wcslen(p_path);
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args1, const wchar_t *);
+			p_next = va_arg(args1, const wchar_t *);
 
-			if (next != NULL)
+			if (p_next != NULL)
 			{
-				i_result_size += wcslen(next) + 1; // +1 for initial OS separator
+				i_result_size += wcslen(p_next) + 1; // +1 for initial OS separator
 			}
 			i++;
 		} while (i < i_length);
@@ -188,14 +188,14 @@ static inline wchar_t *wide_append_to_path(const wchar_t *p_path, const size_t i
 	wcscpy(p_wide_result_path, p_path);
 
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args2, const wchar_t *);
-			if (next != NULL)
+			p_next = va_arg(args2, const wchar_t *);
+			if (p_next != NULL)
 			{
 				wcscat(p_wide_result_path, WIDE(OS_SEPARATOR));
-				wcscat(p_wide_result_path, next);
+				wcscat(p_wide_result_path, p_next);
 			}
 			i++;
 		} while (i < i_length);
@@ -226,7 +226,7 @@ static inline char *multibyte_append_to_path(const char *p_path, const size_t i_
 		return NULL;
 	}
 
-	const char *next;
+	const char *p_next;
 	char	   *p_result_path = NULL;
 	size_t		i_result_size = 0;
 	va_list		args1, args2;
@@ -236,14 +236,14 @@ static inline char *multibyte_append_to_path(const char *p_path, const size_t i_
 
 	i_result_size = strlen(p_path);
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args1, const char *);
+			p_next = va_arg(args1, const char *);
 
-			if (next != NULL)
+			if (p_next != NULL)
 			{
-				i_result_size += strlen(next) + 1; // +1 for initial OS separator
+				i_result_size += strlen(p_next) + 1; // +1 for initial OS separator
 			}
 			i++;
 		} while (i < i_length);
@@ -261,14 +261,14 @@ static inline char *multibyte_append_to_path(const char *p_path, const size_t i_
 	strcpy(p_result_path, p_path);
 
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args2, const char *);
-			if (next != NULL)
+			p_next = va_arg(args2, const char *);
+			if (p_next != NULL)
 			{
 				strcat(p_result_path, OS_SEPARATOR);
-				strcat(p_result_path, next);
+				strcat(p_result_path, p_next);
 			}
 			i++;
 		} while (i < i_length);
@@ -295,7 +295,7 @@ static inline char *multibyte_append_to_path(const char *p_path, const size_t i_
  */
 static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 {
-	const wchar_t *next;
+	const wchar_t *p_next;
 	char		  *p_base_directory		 = get_base_plugin_directory();
 	wchar_t		  *p_wide_base_directory = NULL;
 	wchar_t		  *p_wide_result_path	 = NULL;
@@ -313,6 +313,7 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 
 	if (!p_wide_base_directory)
 	{
+		free(p_base_directory);
 		return NULL;
 	}
 
@@ -329,14 +330,14 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 	va_copy(args2, args1);
 
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args1, const wchar_t *);
+			p_next = va_arg(args1, const wchar_t *);
 
-			if (next != NULL)
+			if (p_next != NULL)
 			{
-				i_result_size += wcslen(next) + 1; // +1 for initial OS separator
+				i_result_size += wcslen(p_next) + 1; // +1 for initial OS separator
 			}
 			i++;
 		} while (i < i_length);
@@ -348,20 +349,21 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
 
 	if (!p_wide_result_path)
 	{
+		free(p_wide_base_directory);
 		return NULL;
 	}
 
 	wcscpy(p_wide_result_path, p_wide_base_directory);
 
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args2, const wchar_t *);
-			if (next != NULL)
+			p_next = va_arg(args2, const wchar_t *);
+			if (p_next != NULL)
 			{
 				wcscat(p_wide_result_path, WIDE(OS_SEPARATOR));
-				wcscat(p_wide_result_path, next);
+				wcscat(p_wide_result_path, p_next);
 			}
 			i++;
 		} while (i < i_length);
@@ -390,7 +392,7 @@ static inline wchar_t *wide_append_to_plugin_path(const size_t i_length, ...)
  */
 static inline char *multibyte_append_to_plugin_path(const size_t i_length, ...)
 {
-	const char *next;
+	const char *p_next;
 	char	   *p_base_directory = get_base_plugin_directory();
 	char	   *p_result_path	 = NULL;
 	size_t		i_result_size	 = 0;
@@ -411,14 +413,14 @@ static inline char *multibyte_append_to_plugin_path(const size_t i_length, ...)
 
 	i_result_size = strlen(p_base_directory);
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args1, const char *);
+			p_next = va_arg(args1, const char *);
 
-			if (next != NULL)
+			if (p_next != NULL)
 			{
-				i_result_size += strlen(next) + 1; // +1 for initial OS separator
+				i_result_size += strlen(p_next) + 1; // +1 for initial OS separator
 			}
 			i++;
 		} while (i < i_length);
@@ -430,20 +432,21 @@ static inline char *multibyte_append_to_plugin_path(const size_t i_length, ...)
 
 	if (!p_result_path)
 	{
+		free(p_base_directory);
 		return NULL;
 	}
 
 	strcpy(p_result_path, p_base_directory);
 
 	{
-		int i = 0;
+		size_t i = 0;
 		do
 		{
-			next = va_arg(args2, const char *);
-			if (next != NULL)
+			p_next = va_arg(args2, const char *);
+			if (p_next != NULL)
 			{
 				strcat(p_result_path, OS_SEPARATOR);
-				strcat(p_result_path, next);
+				strcat(p_result_path, p_next);
 			}
 			i++;
 		} while (i < i_length);
