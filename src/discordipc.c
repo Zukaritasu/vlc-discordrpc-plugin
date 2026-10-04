@@ -84,7 +84,7 @@ typedef struct
 /**
  * @struct vlc_discord_ipc_header_t
  * @brief Discord IPC packet header.
- * * This structure matches the binary format required by Discord's IPC 
+ * * This structure matches the binary format required by Discord's IPC
  * handshake and frame transmission.
  */
 typedef struct
@@ -129,8 +129,8 @@ static void GetAllTempDirs(unix_tempdir_array_t *p_array)
 	p_array->i_count = 0;
 	p_array->psz_dirs = NULL;
 
-	const char *env_tempdirs[] = 
-	{ 
+	const char *env_tempdirs[] =
+	{
 		"XDG_RUNTIME_DIR",
 		"TMPDIR",
 		"TMP",
@@ -159,7 +159,7 @@ static void GetAllTempDirs(unix_tempdir_array_t *p_array)
 			}
 
 			if (b_already_added) continue;
-			
+
 			void* p_temp = realloc(p_array->psz_dirs, sizeof(char*) * (p_array->i_count + 1));
 			if (!p_temp)
 			{
@@ -282,7 +282,7 @@ cleanup:
 	CloseHandle(ov.hEvent);
 	return b_ok;
 #else
-	
+
 	size_t i_sent = 0;
     const char *p_ptr = (const char *)p_buffer;
 
@@ -292,9 +292,9 @@ cleanup:
         int i_ret = poll(&pfd, 1, PIPE_WRITE_TIMEOUT_MS);
         if (i_ret <= 0) return false;
 
-		if (pfd.revents & (POLLHUP | POLLERR)) 
+		if (pfd.revents & (POLLHUP | POLLERR))
 		{
-			if (bp_errpipe) *bp_errpipe = true; 
+			if (bp_errpipe) *bp_errpipe = true;
 			return false;
 		}
 
@@ -304,7 +304,7 @@ cleanup:
 			if (errno == EPIPE && bp_errpipe) *bp_errpipe = true;
 			return false;
 		}
-        
+
         i_sent += (size_t)i_bytes;
     }
     return true;
@@ -369,8 +369,8 @@ cleanup:
         struct pollfd pfd = {.fd = p_sys->handle, .events = POLLIN};
         if (poll(&pfd, 1, PIPE_READ_TIMEOUT_MS) <= 0) return false;
 
-		if (pfd.revents & (POLLHUP | POLLERR)) 
-		{ 
+		if (pfd.revents & (POLLHUP | POLLERR))
+		{
 			if (bp_errpipe) *bp_errpipe = true;
 			return false;
 		}
@@ -385,12 +385,12 @@ cleanup:
 		if (i_bytes < 0)
 		{
 			if (errno == EINTR) continue;
-			if (errno == EAGAIN || errno == EWOULDBLOCK) 
+			if (errno == EAGAIN || errno == EWOULDBLOCK)
 				return true;
 			if (errno == ECONNRESET && bp_errpipe) *bp_errpipe = true;
 			return false;
 		}
-		
+
         i_received += i_bytes;
     }
     return true;
@@ -429,7 +429,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, enum DiscordOp
 
 	if (do_opcode == OP_CLOSE)
 		return true; /* Close command has no body, skip waiting for response */
-	
+
 	if (!WriteAll(p_sys, psz_handshake, json_len, bp_errpipe))
 	{
 		if (p_sys->pf_err)
@@ -472,7 +472,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, enum DiscordOp
 		bool b_success = (strstr(response, "\"evt\":\"READY\"") ||
 						strstr(response, "\"cmd\":\"SET_ACTIVITY\"") ||
 						strstr(response, "\"code\":0"));
-		
+
 		if (!b_success)
 		{
 			char *sz_msg_pos = strstr(response, "\"message\":\"");
@@ -497,7 +497,7 @@ static bool SendDiscordMessageSync(vlc_discord_ipc_data_t *p_sys, enum DiscordOp
 		}
 
 		free(response);
-		
+
 		return b_success;
 	}
 
@@ -525,13 +525,13 @@ static bool Impl_Close(vlc_discord_ipc_t *p_self)
 #elif defined(__linux__) || defined(__APPLE__)
 	close(p_sys->handle);
 #else
-	#error “Platform not supported for this plugin”
+	#error "Platform not supported for this plugin"
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 	p_sys->handle = INVALID_PIPE;
 	p_sys->b_connected = false;
 
 	vlc_mutex_unlock(&p_sys->lock);
-	
+
 	return true;
 }
 
@@ -545,7 +545,7 @@ static bool Impl_Destroy(vlc_discord_ipc_t *p_self)
 
 	free(p_sys);
 	p_self->p_sys = NULL;
-	
+
 	return true;
 }
 
@@ -565,7 +565,7 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 		return false;
 	}
 
-	char s_state[DISCORD_FIELD_MAX], s_details[DISCORD_FIELD_MAX], 
+	char s_state[DISCORD_FIELD_MAX], s_details[DISCORD_FIELD_MAX],
 		 s_l_text[DISCORD_FIELD_MAX], s_s_text[DISCORD_FIELD_MAX], s_name[DISCORD_FIELD_MAX];
 
 	JsonEscape(s_state, dp_presence->sz_state, sizeof(s_state));
@@ -651,12 +651,12 @@ static bool Impl_SetPresence(vlc_discord_ipc_t *p_self, discord_presence_t prese
 #elif defined(__linux__) || defined(__APPLE__)
 		close(p_sys->handle);
 #else
-	#error “Platform not supported for this plugin”
+	#error "Platform not supported for this plugin"
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 		p_sys->handle = INVALID_PIPE;
 		p_sys->b_connected = false;
 	}
-	
+
 	free(psz_json);
 
 	vlc_mutex_unlock(&p_sys->lock);
@@ -698,7 +698,7 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 			}
 		}
 	}
-	
+
 #elif defined(__linux__) || defined(__APPLE__)
 	unix_tempdir_array_t temp_dirs;
 	GetAllTempDirs(&temp_dirs);
@@ -710,8 +710,8 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 		vlc_mutex_unlock(&p_sys->lock);
 		return false;
 	}
-	
-	const char *sub_paths[] = 
+
+	const char *sub_paths[] =
 	{
         "%s/discord-ipc-%d",
 #ifdef __linux__
@@ -757,9 +757,9 @@ static bool Impl_Connect(vlc_discord_ipc_t *p_self, uint64_t id)
 	}
 
 	FreeTempDirs(&temp_dirs);
-	
+
 #else
-	#error “Platform not supported for this plugin”
+	#error "Platform not supported for this plugin"
 #endif // defined(_WIN32) || defined(__linux__) || defined(__APPLE__)
 
 	if (p_sys->pf_err)

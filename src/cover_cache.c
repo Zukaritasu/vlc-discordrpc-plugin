@@ -25,13 +25,13 @@
 typedef struct cover_node_t
 {
 	cover_data_t		 data;
-	struct cover_node_t *next;
+	struct cover_node_t *p_next;
 } cover_node_t;
 
 typedef struct cover_cache_t
 {
-	cover_node_t *head;
-	size_t		  size;
+	cover_node_t *p_head;
+	size_t		  i_size;
 } cover_cache_t;
 
 /*
@@ -53,8 +53,8 @@ static cover_node_t *CreateCoverNode(const cover_data_t *data)
 	if (p_node == NULL)
 		return NULL;
 
-	p_node->data = *data;
-	p_node->next = NULL;
+	p_node->data   = *data;
+	p_node->p_next = NULL;
 
 	return p_node;
 }
@@ -68,8 +68,8 @@ cover_cache_t *DiscordRPC_CreateCoverCache(void)
 	if (p_cache == NULL)
 		return NULL;
 
-	p_cache->head = NULL;
-	p_cache->size = 0;
+	p_cache->p_head = NULL;
+	p_cache->i_size = 0;
 
 	return p_cache;
 }
@@ -79,14 +79,14 @@ size_t DiscordRPC_GetCoverCacheSize(const cover_cache_t *p_cache)
 	if (p_cache == NULL)
 		return 0ULL;
 
-	return p_cache->size;
+	return p_cache->i_size;
 }
 
 void DiscordRPC_FreeCoverCache(cover_cache_t **p_cache)
 {
-	if ((*p_cache)->head != NULL)
+	if ((*p_cache)->p_head != NULL)
 	{
-		cover_node_t *p_actual_node = (*p_cache)->head, *p_next_node = p_actual_node->next;
+		cover_node_t *p_actual_node = (*p_cache)->p_head, *p_next_node = p_actual_node->p_next;
 
 		/* Free all nodes from the cache before freeing the cache. */
 		do
@@ -96,7 +96,7 @@ void DiscordRPC_FreeCoverCache(cover_cache_t **p_cache)
 			p_actual_node = p_next_node;
 
 			if (p_actual_node != NULL)
-				p_next_node = p_actual_node->next;
+				p_next_node = p_actual_node->p_next;
 		} while (p_actual_node != NULL);
 	}
 
@@ -106,7 +106,7 @@ void DiscordRPC_FreeCoverCache(cover_cache_t **p_cache)
 
 bool DiscordRPC_ExistsCoverData(const cover_cache_t *p_cache, const char *pcsz_uri)
 {
-	cover_node_t *p_node_target = p_cache->head;
+	cover_node_t *p_node_target = p_cache->p_head;
 
 	while (p_node_target != NULL)
 	{
@@ -116,18 +116,18 @@ bool DiscordRPC_ExistsCoverData(const cover_cache_t *p_cache, const char *pcsz_u
 			return true;
 		}
 
-		p_node_target = p_node_target->next;
+		p_node_target = p_node_target->p_next;
 	}
 
 	return false;
 }
 
-cover_data_t *DiscordRPC_GetCoverData(const cover_cache_t *p_cache, const char *pcsz_uri)
+const cover_data_t *DiscordRPC_GetCoverData(const cover_cache_t *p_cache, const char *pcsz_uri)
 {
 	if (p_cache == NULL || pcsz_uri == NULL)
 		return NULL;
 
-	cover_node_t *p_node_target = p_cache->head;
+	cover_node_t *p_node_target = p_cache->p_head;
 
 	while (p_node_target != NULL)
 	{
@@ -137,7 +137,7 @@ cover_data_t *DiscordRPC_GetCoverData(const cover_cache_t *p_cache, const char *
 			return &p_node_target->data;
 		}
 
-		p_node_target = p_node_target->next;
+		p_node_target = p_node_target->p_next;
 	}
 
 	return NULL;
@@ -153,23 +153,23 @@ bool DiscordRPC_AddCoverData(cover_cache_t *p_cache, const cover_data_t *p_cover
 	if (p_new_cover_node == NULL)
 		return false;
 
-	if (p_cache->head != NULL)
+	if (p_cache->p_head != NULL)
 	{
-		p_new_cover_node->next = p_cache->head;
+		p_new_cover_node->p_next = p_cache->p_head;
 	}
 
-	p_cache->head = p_new_cover_node;
-	p_cache->size++;
+	p_cache->p_head = p_new_cover_node;
+	p_cache->i_size++;
 
 	return true;
 }
 
 bool DiscordRPC_RemoveCoverData(cover_cache_t *p_cache, const char *pcsz_uri)
 {
-	if (p_cache->head == NULL)
+	if (p_cache == NULL || pcsz_uri == NULL || p_cache->p_head == NULL)
 		return false;
 
-	cover_node_t *p_target_node = p_cache->head, *p_before_target_node = NULL;
+	cover_node_t *p_target_node = p_cache->p_head, *p_before_target_node = NULL;
 	bool		  b_node_found = false;
 
 	while (p_target_node != NULL)
@@ -182,23 +182,23 @@ bool DiscordRPC_RemoveCoverData(cover_cache_t *p_cache, const char *pcsz_uri)
 		}
 
 		p_before_target_node = p_target_node;
-		p_target_node		 = p_target_node->next;
+		p_target_node		 = p_target_node->p_next;
 	}
 
 	if (!b_node_found)
 		return false;
 
-	if (p_target_node == p_cache->head)
+	if (p_target_node == p_cache->p_head)
 	{
-		p_cache->head = p_target_node->next;
+		p_cache->p_head = p_target_node->p_next;
 	}
 	else
 	{
-		p_before_target_node->next = p_target_node->next;
+		p_before_target_node->p_next = p_target_node->p_next;
 	}
 
 	FreeCoverNode(p_target_node);
-	p_cache->size--;
+	p_cache->i_size--;
 
 	return true;
 }

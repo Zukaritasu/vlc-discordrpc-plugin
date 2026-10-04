@@ -70,7 +70,7 @@ bool DiscordRPC_ExistsCoverData(const cover_cache_t *p_cache, const char *pcsz_u
  * @param pcsz_uri The URI of the belonging cover data.
  * @return A pointer to the cover data if it was found, NULL otherwise.
  */
-cover_data_t *DiscordRPC_GetCoverData(const cover_cache_t *p_cache, const char *pcsz_uri);
+const cover_data_t *DiscordRPC_GetCoverData(const cover_cache_t *p_cache, const char *pcsz_uri);
 
 /**
  * @brief Adds a cover data inside the specified cover cache.
